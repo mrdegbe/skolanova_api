@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.manifest
+*.spec
+
+# Pipenv / Poetry / virtualenv
+Pipfile.lock
+poetry.lock
+venv/
+env/
+ENV/
+.venv/
+
+# Pytest
+.cache/
+.pytest_cache/
+
+# Logs
+*.log
+
+# VS Code settings
+.vscode/
+
+# MyPy
+.mypy_cache/
+
+# Coverage reports
+.coverage
+htmlcov/
+.tox/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Database files
+*.sqlite3
+*.db
+
+# Environments
+.env
+.env.*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDEs
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Docker
+*.pid
+
+# Others
+*.bak
+*.tmp
+*.swp

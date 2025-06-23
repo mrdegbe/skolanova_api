@@ -43,7 +43,7 @@ class TokenData(BaseModel):
     id: int | None = None
 
 
-# ==== STUDENT ====
+# ---- STUDENT ----
 
 
 class StudentBase(BaseModel):
@@ -66,7 +66,7 @@ class StudentOut(StudentBase):
         orm_mode = True
 
 
-# ==== CLASS ====
+# ---- CLASS ----
 
 
 class ClassBase(BaseModel):
@@ -85,7 +85,7 @@ class ClassOut(ClassBase):
         orm_mode = True
 
 
-# ==== SUBJECT ====
+# ---- SUBJECT ----
 
 
 class SubjectBase(BaseModel):
@@ -103,7 +103,7 @@ class SubjectOut(SubjectBase):
         orm_mode = True
 
 
-# ==== TEACHER ====
+# ---- TEACHER ----
 
 
 class TeacherBase(BaseModel):
@@ -123,7 +123,7 @@ class Teacher(TeacherBase):
         orm_mode = True
 
 
-# ==== YEAR ====
+# ---- YEAR ----
 class YearBase(BaseModel):
     year: int
 
@@ -139,7 +139,7 @@ class YearOut(YearBase):
         orm_mode = True
 
 
-# ==== RESULT ====
+# ---- RESULT ----
 
 
 class ResultBase(BaseModel):
@@ -161,9 +161,11 @@ class ResultOut(ResultBase):
         orm_mode = True
 
 
-# ==== REMARK ====
+class ResultUpdate(BaseModel):
+    score: float
 
 
+# ---- REMARK ----
 class RemarkBase(BaseModel):
     result_id: int
     teacher_id: int
@@ -175,6 +177,24 @@ class RemarkCreate(RemarkBase):
 
 
 class RemarkOut(RemarkBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+# ---- ClassSubjectTeacherBase ----
+class ClassSubjectTeacherBase(BaseModel):
+    class_id: int
+    subject_id: int
+    teacher_id: int
+
+
+class ClassSubjectTeacherCreate(ClassSubjectTeacherBase):
+    pass
+
+
+class ClassSubjectTeacher(ClassSubjectTeacherBase):
     id: int
 
     class Config:

@@ -136,8 +136,10 @@ def update_result(db: Session, result_id: int, result: schemas.ResultCreate):
     db_result = get_result(db, result_id)
     if not db_result:
         raise Exception("Result not found")
-    for key, value in result.dict().items():
-        setattr(db_result, key, value)
+    
+    # ✅ Only allow changing the score — nothing else!
+    db_result.score = result.score
+
     db.commit()
     db.refresh(db_result)
     return db_result
@@ -200,3 +202,33 @@ def create_year(db: Session, year: schemas.YearCreate):
 
 def get_years(db: Session):
     return db.query(models.Year).all()
+
+
+# --- ClassSubjectTeacher ---
+def create_class_subject_teacher(db: Session, link: schemas.ClassSubjectTeacherCreate):
+    db_link = models.ClassSubjectTeacher(**link.dict())
+    db.add(db_link)
+    db.commit()
+    db.refresh(db_link)
+    return db_link
+
+
+def get_class_subject_teacher(db: Session, link_id: int):
+    return (
+        db.query(models.ClassSubjectTeacher)
+        .filter(models.ClassSubjectTeacher.id == link_id)
+        .first()
+    )
+
+
+def get_class_subject_teachers(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.ClassSubjectTeacher).offset(skip).limit(limit).all()
+
+
+def delete_class_subject_teacher(db: Session, link_id: int):
+    link = get_class_subject_teacher(db, link_id)
+    if not link:
+        raise Exception("Not found")
+    db.delete(link)
+    db.commit()
+    return {"ok": True}

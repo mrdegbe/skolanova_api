@@ -4,13 +4,21 @@
 from sqlalchemy.orm import Session
 from app import models
 from io import BytesIO
+from reportlab.lib import colors
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer,
+    Table,
+    TableStyle,
+    Image,
+)
+from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
 
-def generate_student_report_pdf(
-    db: Session, student_id: int, term: str, year_id: int
-):
+def generate_student_report_pdf(db: Session, student_id: int, term: str, year_id: int):
     # Convert string to TermEnum
     try:
         term_enum = models.TermEnum(term)
@@ -68,35 +76,59 @@ def generate_student_report_pdf(
 
     # Generate PDF
     buffer = BytesIO()
-    p = canvas.Canvas(buffer, pagesize=A4)
-    width, height = A4
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    styles = getSampleStyleSheet()
+    elements = []
 
-    p.setFont("Helvetica-Bold", 16)
-    p.drawCentredString(width / 2, height - 50, f"Terminal Report")
+    # p = canvas.Canvas(buffer, pagesize=A4)
+    # width, height = A4
 
-    p.setFont("Helvetica", 12)
-    p.drawString(50, height - 100, f"Name: {student.first_name} {student.last_name}")
-    p.drawString(50, height - 120, f"Class: {student.class_.name}")
-    p.drawString(50, height - 140, f"Term: {term_enum.value}  |  Year: {year_id}")
+    # Optional: add school logo
+    # logo = Image('static/logo.png', width=50, height=50)
+    # elements.append(logo)
 
-    y = height - 180
-    p.drawString(50, y, "Subject")
-    p.drawString(300, y, "Score")
-    y -= 20
+    elements.append(Paragraph("<b>NEW DAWN INTELLIGENCE ACADEMY</b>", styles["Title"]))
+    elements.append(Paragraph(f"Terminal Report", styles["Title"]))
+    elements.append(Spacer(1, 12))
 
+    elements.append(
+        Paragraph(f"Name: {student.first_name} {student.last_name}", styles["Normal"])
+    )
+    elements.append(Paragraph(f"Class: {student.class_.name}", styles["Normal"]))
+    elements.append(Paragraph(f"Term: {term} | Year ID: {year_id}", styles["Normal"]))
+    elements.append(Spacer(1, 12))
+
+    # Table data
+    table_data = [["Subject", "Score"]]
     for r in results:
-        p.drawString(50, y, r.subject.name)
-        p.drawString(300, y, str(r.score))
-        y -= 20
+        table_data.append([r.subject.name, f"{r.score:.2f}"])
 
-    y -= 10
-    p.drawString(50, y, f"Total: {total_score}")
-    y -= 20
-    p.drawString(50, y, f"Average: {average_score:.2f}")
-    y -= 20
-    p.drawString(50, y, f"Position in class: {position} of {len(class_scores)}")
+    table_data.append(["", ""])
+    table_data.append(["Total", f"{total_score:.2f}"])
+    table_data.append(["Average", f"{average_score:.2f}"])
+    table_data.append(["Position", f"{position} of {len(class_scores)}"])
 
-    p.showPage()
-    p.save()
+    t = Table(table_data, colWidths=[250, 100])
+    t.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.lightblue),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
+                ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
+                ("GRID", (0, 0), (-1, -1), 1, colors.black),
+            ]
+        )
+    )
+
+    elements.append(t)
+    elements.append(Spacer(1, 36))
+
+    elements.append(Paragraph("__________________________", styles["Normal"]))
+    elements.append(Paragraph("Class Teacher's Signature", styles["Normal"]))
+
+    doc.build(elements)
     buffer.seek(0)
     return buffer

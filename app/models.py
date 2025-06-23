@@ -41,6 +41,7 @@ class Teacher(Base):
     # ✅ Relationships
     user = relationship("User", back_populates="teacher")
     classes = relationship("Class", back_populates="teacher")
+    subject_links = relationship("ClassSubjectTeacher", back_populates="teacher")
 
 
 class Class(Base):
@@ -54,6 +55,7 @@ class Class(Base):
     students = relationship(
         "Student", back_populates="class_"
     )  # 'class' is a reserved keyword
+    subject_links = relationship("ClassSubjectTeacher", back_populates="class_")
 
 
 class Student(Base):
@@ -80,6 +82,7 @@ class Subject(Base):
 
     # ✅ Relationships
     results = relationship("Result", back_populates="subject")
+    subject_links = relationship("ClassSubjectTeacher", back_populates="subject")
 
 
 class Year(Base):
@@ -120,3 +123,17 @@ class Remark(Base):
     # ✅ Relationships
     result = relationship("Result", back_populates="remarks")
     teacher = relationship("Teacher")
+
+
+class ClassSubjectTeacher(Base):
+    __tablename__ = "class_subject_teacher"
+
+    id = Column(Integer, primary_key=True, index=True)
+    class_id = Column(Integer, ForeignKey("classes.id", ondelete="CASCADE"))
+    subject_id = Column(Integer, ForeignKey("subjects.id", ondelete="CASCADE"))
+    teacher_id = Column(Integer, ForeignKey("teachers.id", ondelete="CASCADE"))
+
+    # ✅ Relationships
+    class_ = relationship("Class", back_populates="subject_links")
+    subject = relationship("Subject", back_populates="subject_links")
+    teacher = relationship("Teacher", back_populates="subject_links")

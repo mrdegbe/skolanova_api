@@ -5,7 +5,9 @@ from app import models, auth
 db = SessionLocal()
 
 hashed = auth.hash_password("teacherpass")
-user = models.User(email="teacher@example.com", password_hash=hashed, role=models.RoleEnum.teacher)
+user = models.User(
+    email="teacher@example.com", password_hash=hashed, role=models.RoleEnum.teacher
+)
 db.add(user)
 db.commit()
 db.refresh(user)

@@ -13,6 +13,7 @@ from app.routers import (
     results,
     reports as reports_router,
     config as config_router,
+    class_subject_teacher,
 )
 
 
@@ -37,6 +38,7 @@ app.include_router(subjects.router)
 app.include_router(results.router)
 app.include_router(reports_router.router)
 app.include_router(config_router.router)
+app.include_router(class_subject_teacher.router)
 
 
 @app.post("/auth/login", response_model=schemas.Token)

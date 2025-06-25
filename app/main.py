@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from . import models, schemas, crud, auth
 from .database import SessionLocal, engine, Base
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.middleware.cors import CORSMiddleware
 from app.routers import (
     students,
     teachers,
@@ -20,6 +21,15 @@ from app.routers import (
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+# 👉 Add CORS middleware **immediately**
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8080"],  # Vite dev server
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # Dependency
@@ -51,5 +61,14 @@ def login(
     if not auth.verify_password(form_data.password, user.password_hash):
         raise HTTPException(status_code=400, detail="Invalid email or password")
 
-    access_token = auth.create_access_token(data={"sub": str(user.id)})
+    # fake_name = user.email.split("@")[0].replace(".", " ").title()
+    # ✅ Build the payload with email and role too:
+    token_data = {
+        "sub": str(user.id),
+        "email": user.email,
+        "role": str(user.role.value),  # if you store it as Enum, convert to string
+        "name": user.name,
+    }
+
+    access_token = auth.create_access_token(data=token_data)  # {"sub": str(user.id)}
     return {"access_token": access_token, "token_type": "bearer"}

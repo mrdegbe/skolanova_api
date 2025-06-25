@@ -1,7 +1,9 @@
 # app/crud.py
 
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from . import models, schemas
+from . import models, auth, schemas
+import secrets, string
 
 
 # --- STUDENTS ---
@@ -136,7 +138,7 @@ def update_result(db: Session, result_id: int, result: schemas.ResultCreate):
     db_result = get_result(db, result_id)
     if not db_result:
         raise Exception("Result not found")
-    
+
     # ✅ Only allow changing the score — nothing else!
     db_result.score = result.score
 
@@ -155,16 +157,65 @@ def delete_result(db: Session, result_id: int):
 
 
 # --- TEACHERS ---
-def create_teacher(db: Session, teacher: schemas.TeacherCreate):
-    db_teacher = models.Teacher(**teacher.dict())
+def create_teacher(db: Session, teacher_data: schemas.TeacherCreate):
+
+    # 1. Generate random password
+    password = "".join(
+        secrets.choice(string.ascii_letters + string.digits) for _ in range(12)
+    )
+
+    # 2. Hash it
+    password_hash = auth.hash_password(password)
+
+    # 3. Create linked User
+    db_user = models.User(
+        email=teacher_data.email,
+        password_hash=password_hash,
+        role=models.RoleEnum.teacher,
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+
+    # 4. Create teacher
+    db_teacher = models.Teacher(
+        first_name=teacher_data.first_name,
+        last_name=teacher_data.last_name,
+        user_id=db_user.id,
+    )
     db.add(db_teacher)
     db.commit()
     db.refresh(db_teacher)
-    return db_teacher
+
+    # 5. Return teacher + plain password so admin can copy
+    return {
+        "teacher": {
+            "id": db_teacher.id,
+            "name": f"{db_teacher.first_name} {db_teacher.last_name}",
+            "email": db_user.email,
+        },
+        "plain_password": password,
+    }
 
 
 def get_teachers(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Teacher).offset(skip).limit(limit).all()
+    teachers = db.query(models.Teacher).offset(skip).limit(limit).all()
+
+    results = []
+    for teacher in teachers:
+        user = db.query(models.User).filter(models.User.id == teacher.user_id).first()
+
+        results.append({
+            "id": teacher.id,
+            "name": f"{teacher.first_name} {teacher.last_name}",
+            "subjects": [],  # You can replace with real subject data later
+            "classes": [],   # You can replace with real class data later
+            "contact": user.email if user else "",
+            "status": "Active",  # Replace with real status if you have a status field
+        })
+
+    return results
+
 
 
 def get_teacher(db: Session, teacher_id: int):
@@ -232,3 +283,14 @@ def delete_class_subject_teacher(db: Session, link_id: int):
     db.delete(link)
     db.commit()
     return {"ok": True}
+
+
+# --- Users ---
+def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate):
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.name = user_update.name
+    db.commit()
+    db.refresh(user)
+    return user

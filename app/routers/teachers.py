@@ -1,5 +1,6 @@
 # app/routers/teachers.py
 
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app import schemas, models, crud, auth
@@ -15,10 +16,10 @@ def create_teacher(
 ):
     if current_user.role != models.RoleEnum.admin:
         raise HTTPException(status_code=403, detail="Only admins can create teachers")
+
     return crud.create_teacher(db, teacher)
 
-
-@router.get("/")
+@router.get("/", response_model=List[schemas.TeacherOut])
 def get_teachers(
     skip: int = 0,
     limit: int = 100,
@@ -26,6 +27,14 @@ def get_teachers(
     current_user: models.User = Depends(auth.get_current_user),
 ):
     return crud.get_teachers(db, skip, limit)
+# @router.get("/")
+# def get_teachers(
+#     skip: int = 0,
+#     limit: int = 100,
+#     db: Session = Depends(auth.get_db),
+#     current_user: models.User = Depends(auth.get_current_user),
+# ):
+#     return crud.get_teachers(db, skip, limit)
 
 
 @router.get("/{teacher_id}")

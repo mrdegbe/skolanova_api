@@ -7,7 +7,7 @@ db = SessionLocal()
 
 hashed = auth.hash_password("admin")
 admin = models.User(
-    email="admin2@example.com", password_hash=hashed, role=models.RoleEnum.admin
+    email="admin@example.com", password_hash=hashed, role=models.RoleEnum.admin
 )
 db.add(admin)
 db.commit()

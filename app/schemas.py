@@ -2,7 +2,7 @@
 
 # from enum import Enum
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Optional, List
 
 # ✅ Role enum to match your models.py
 # class RoleEnum(str, Enum):
@@ -34,6 +34,10 @@ class UserLogin(BaseModel):
     password: str
 
 
+class UserUpdate(BaseModel):
+    name: str
+
+
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -44,8 +48,6 @@ class TokenData(BaseModel):
 
 
 # ---- STUDENT ----
-
-
 class StudentBase(BaseModel):
     first_name: str
     last_name: str
@@ -67,15 +69,14 @@ class StudentOut(StudentBase):
 
 
 # ---- CLASS ----
-
-
 class ClassBase(BaseModel):
     name: str
     teacher_id: int
 
 
 class ClassCreate(ClassBase):
-    pass
+    name: str
+    # pass
 
 
 class ClassOut(ClassBase):
@@ -106,18 +107,37 @@ class SubjectOut(SubjectBase):
 # ---- TEACHER ----
 
 
+# Input
+class TeacherCreate(BaseModel):
+    first_name: str
+    last_name: str
+    email: EmailStr
+
+
+# DB + internal use
 class TeacherBase(BaseModel):
     first_name: str
     last_name: str
-    user_id: int  # links to User table
+    user_id: int
 
 
-class TeacherCreate(TeacherBase):
-    pass
-
-
-class Teacher(TeacherBase):
+# Output
+class TeacherResponse(BaseModel):
     id: int
+    first_name: str
+    last_name: str
+    email: EmailStr
+
+    class Config:
+        orm_mode = True
+
+class TeacherOut(BaseModel):
+    id: int
+    name: str
+    subjects: List[str] = []    # or Optional[List[str]]
+    classes: List[str] = []
+    contact: str
+    status: str
 
     class Config:
         orm_mode = True

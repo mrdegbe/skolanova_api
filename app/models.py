@@ -25,6 +25,7 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     password_hash = Column(String)
     role = Column(Enum(RoleEnum))
+    name = Column(String)  # ✅ NEW
 
     # ✅ Relationships
     teacher = relationship("Teacher", back_populates="user", uselist=False)

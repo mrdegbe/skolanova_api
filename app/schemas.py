@@ -131,10 +131,11 @@ class TeacherResponse(BaseModel):
     class Config:
         orm_mode = True
 
+
 class TeacherOut(BaseModel):
     id: int
     name: str
-    subjects: List[str] = []    # or Optional[List[str]]
+    subjects: List[str] = []  # or Optional[List[str]]
     classes: List[str] = []
     contact: str
     status: str

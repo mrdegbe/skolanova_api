@@ -60,9 +60,7 @@ class Class(Base):
     class_teacher_id = Column(Integer, ForeignKey("teachers.id"))
 
     class_teacher = relationship("Teacher", back_populates="assigned_classes")
-    students = relationship(
-        "Student", back_populates="class_"
-    )  # 'class' is a reserved keyword
+    students = relationship("Student", back_populates="class_")
     subject_links = relationship("ClassSubjectTeacher", back_populates="class_")
 
 

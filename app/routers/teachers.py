@@ -19,6 +19,7 @@ def create_teacher(
 
     return crud.create_teacher(db, teacher)
 
+
 @router.get("/", response_model=List[schemas.TeacherOut])
 def get_teachers(
     skip: int = 0,
@@ -27,6 +28,8 @@ def get_teachers(
     current_user: models.User = Depends(auth.get_current_user),
 ):
     return crud.get_teachers(db, skip, limit)
+
+
 # @router.get("/")
 # def get_teachers(
 #     skip: int = 0,

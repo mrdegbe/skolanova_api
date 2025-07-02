@@ -172,7 +172,7 @@ def create_teacher(db: Session, teacher_data: schemas.TeacherCreate):
         email=teacher_data.email,
         password_hash=password_hash,
         role=models.RoleEnum.teacher,
-        name=f"{teacher_data.first_name} {teacher_data.last_name}"
+        name=f"{teacher_data.first_name} {teacher_data.last_name}",
     )
     db.add(db_user)
     db.commit()
@@ -206,17 +206,18 @@ def get_teachers(db: Session, skip: int = 0, limit: int = 100):
     for teacher in teachers:
         user = db.query(models.User).filter(models.User.id == teacher.user_id).first()
 
-        results.append({
-            "id": teacher.id,
-            "name": f"{teacher.first_name} {teacher.last_name}",
-            "subjects": [],  # You can replace with real subject data later
-            "classes": [],   # You can replace with real class data later
-            "contact": user.email if user else "",
-            "status": "Active",  # Replace with real status if you have a status field
-        })
+        results.append(
+            {
+                "id": teacher.id,
+                "name": f"{teacher.first_name} {teacher.last_name}",
+                "subjects": [],  # You can replace with real subject data later
+                "classes": [],  # You can replace with real class data later
+                "contact": user.email if user else "",
+                "status": "Active",  # Replace with real status if you have a status field
+            }
+        )
 
     return results
-
 
 
 def get_teacher(db: Session, teacher_id: int):

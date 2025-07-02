@@ -172,6 +172,7 @@ def create_teacher(db: Session, teacher_data: schemas.TeacherCreate):
         email=teacher_data.email,
         password_hash=password_hash,
         role=models.RoleEnum.teacher,
+        name=f"{teacher_data.first_name} {teacher_data.last_name}"
     )
     db.add(db_user)
     db.commit()

@@ -37,11 +37,16 @@ class Teacher(Base):
     id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String)
     last_name = Column(String)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
 
     # ✅ Relationships
     user = relationship("User", back_populates="teacher")
-    classes = relationship("Class", back_populates="teacher")
+
+    # ✔️ This means: “I am the dedicated class teacher for these classes”
+    assigned_classes = relationship("Class", back_populates="class_teacher")
+    # classes = relationship("Class", back_populates="teacher")
+
+    # ✔️ This means: “I teach these subjects to these classes”
     subject_links = relationship("ClassSubjectTeacher", back_populates="teacher")
 
 
@@ -50,9 +55,11 @@ class Class(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True)
-    teacher_id = Column(Integer, ForeignKey("teachers.id"))
 
-    teacher = relationship("Teacher", back_populates="classes")
+    # ✔️ Clearer name for homeroom teacher link
+    class_teacher_id = Column(Integer, ForeignKey("teachers.id"))
+
+    class_teacher = relationship("Teacher", back_populates="assigned_classes")
     students = relationship(
         "Student", back_populates="class_"
     )  # 'class' is a reserved keyword

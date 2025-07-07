@@ -17,7 +17,6 @@ from app.routers import (
     class_subject_teacher,
 )
 
-
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()

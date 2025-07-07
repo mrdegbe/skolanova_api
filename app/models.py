@@ -1,7 +1,7 @@
 # app/models.py
 # SQLAlchemy models
 
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, Date, Enum
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, Date, Enum, func, DateTime
 from sqlalchemy.orm import relationship
 from .database import Base
 import enum
@@ -37,7 +37,13 @@ class Teacher(Base):
     id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String)
     last_name = Column(String)
+    contact = Column(String)
+    status = Column(String)
+    specialization = Column(String)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+
+    created_at = Column(DateTime(), server_default=func.now())
+    updated_at = Column(DateTime(), server_default=func.now())
 
     # ✅ Relationships
     user = relationship("User", back_populates="teacher")

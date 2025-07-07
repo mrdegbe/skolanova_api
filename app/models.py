@@ -1,7 +1,17 @@
 # app/models.py
 # SQLAlchemy models
 
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, Date, Enum, func, DateTime
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    ForeignKey,
+    Float,
+    Date,
+    Enum,
+    func,
+    DateTime,
+)
 from sqlalchemy.orm import relationship
 from .database import Base
 import enum

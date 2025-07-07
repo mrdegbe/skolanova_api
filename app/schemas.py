@@ -105,13 +105,25 @@ class SubjectOut(SubjectBase):
 
 
 # ---- TEACHER ----
+class Assignment(BaseModel):
+    class_id: int
+    subject_ids: List[int]
 
 
 # Input
+# class TeacherCreate(BaseModel):
+#     first_name: str
+#     last_name: str
+#     email: EmailStr
 class TeacherCreate(BaseModel):
     first_name: str
     last_name: str
-    email: EmailStr
+    email: str
+    contact: Optional[str] = None
+    status: Optional[str] = "Active"
+    specialization: Optional[str] = None
+    class_teacher_for: Optional[int] = None  # dedicated class teacher for ONE class
+    assignments: Optional[List[Assignment]] = []
 
 
 # DB + internal use

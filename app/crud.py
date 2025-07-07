@@ -183,12 +183,34 @@ def create_teacher(db: Session, teacher_data: schemas.TeacherCreate):
         first_name=teacher_data.first_name,
         last_name=teacher_data.last_name,
         user_id=db_user.id,
+        contact=teacher_data.contact,
+        status=teacher_data.status,
+        specialization=teacher_data.specialization,
     )
     db.add(db_teacher)
     db.commit()
     db.refresh(db_teacher)
 
-    # 5. Return teacher + plain password so admin can copy
+    # 4️⃣ If `class_teacher_for` is given, update the class to link
+    if teacher_data.class_teacher_for:
+        class_ = db.query(models.Class).get(teacher_data.class_teacher_for)
+        if class_:
+            class_.class_teacher_id = db_teacher.id
+            db.add(class_)
+            db.commit()
+
+    # 5️⃣ For each assignment, create links
+    for assignment in teacher_data.assignments or []:
+        for subject_id in assignment.subject_ids:
+            link = models.ClassSubjectTeacher(
+                class_id=assignment.class_id,
+                subject_id=subject_id,
+                teacher_id=db_teacher.id,
+            )
+            db.add(link)
+    db.commit()
+
+    # 6. Return teacher + plain password so admin can copy
     return {
         "teacher": {
             "id": db_teacher.id,

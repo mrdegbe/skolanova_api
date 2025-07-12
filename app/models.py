@@ -58,9 +58,8 @@ class Teacher(Base):
     # ✅ Relationships
     user = relationship("User", back_populates="teacher")
 
-    # ✔️ This means: “I am the dedicated class teacher for these classes”
-    assigned_classes = relationship("Class", back_populates="class_teacher")
-    # classes = relationship("Class", back_populates="teacher")
+    # ✔️ This means: “I am the dedicated class teacher for this class”
+    dedicated_class = relationship("Class", back_populates="class_teacher")
 
     # ✔️ This means: “I teach these subjects to these classes”
     subject_links = relationship("ClassSubjectTeacher", back_populates="teacher")
@@ -75,7 +74,10 @@ class Class(Base):
     # ✔️ Clearer name for homeroom teacher link
     class_teacher_id = Column(Integer, ForeignKey("teachers.id"))
 
-    class_teacher = relationship("Teacher", back_populates="assigned_classes")
+    class_teacher = relationship(
+        "Teacher", back_populates="dedicated_class", uselist=False
+    )
+
     students = relationship("Student", back_populates="class_")
     subject_links = relationship("ClassSubjectTeacher", back_populates="class_")
 

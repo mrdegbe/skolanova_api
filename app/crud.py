@@ -1,7 +1,7 @@
 # app/crud.py
 
 from fastapi import HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from . import models, auth, schemas
 import secrets, string
 
@@ -191,15 +191,7 @@ def create_teacher(db: Session, teacher_data: schemas.TeacherCreate):
     db.commit()
     db.refresh(db_teacher)
 
-    # 4️⃣ If `class_teacher_for` is given, update the class to link
-    if teacher_data.class_teacher_for:
-        class_ = db.query(models.Class).get(teacher_data.class_teacher_for)
-        if class_:
-            class_.class_teacher_id = db_teacher.id
-            db.add(class_)
-            db.commit()
-
-    # 5️⃣ For each assignment, create links
+    # 6 For each assignment, create links
     for assignment in teacher_data.assignments or []:
         for subject_id in assignment.subject_ids:
             link = models.ClassSubjectTeacher(
@@ -210,10 +202,9 @@ def create_teacher(db: Session, teacher_data: schemas.TeacherCreate):
             db.add(link)
     db.commit()
 
-    # 6. Return teacher + plain password so admin can copy
+    # 7. Return teacher + plain password so admin can copy
     return {
         "teacher": {
-            "id": db_teacher.id,
             "name": f"{db_teacher.first_name} {db_teacher.last_name}",
             "email": db_user.email,
         },
@@ -243,7 +234,12 @@ def get_teachers(db: Session, skip: int = 0, limit: int = 100):
 
 
 def get_teacher(db: Session, teacher_id: int):
-    return db.query(models.Teacher).filter(models.Teacher.id == teacher_id).first()
+    return (
+        db.query(models.Teacher)
+        .options(joinedload(models.Teacher.dedicated_class))
+        .filter(models.Teacher.id == teacher_id)
+        .first()
+    )
 
 
 def update_teacher(db: Session, teacher_id: int, teacher: schemas.TeacherCreate):

@@ -122,8 +122,18 @@ class TeacherCreate(BaseModel):
     contact: Optional[str] = None
     status: Optional[str] = "Active"
     specialization: Optional[str] = None
-    class_teacher_for: Optional[int] = None  # dedicated class teacher for ONE class
+    dedicated_class: Optional[int] = None  # dedicated class teacher for ONE class
     assignments: Optional[List[Assignment]] = []
+
+    # AddTeacher Front-End Data
+    # first_name: newTeacher.first_name,
+    # last_name: newTeacher.last_name,
+    # email: newTeacher.email,
+    # contact: newTeacher.contact,
+    # status: newTeacher.status,
+    # specialization: newTeacher.specialization,
+    # class_teacher_for: newTeacher.classTeacherId,
+    # assignments: assignmentsPayload,
 
 
 # DB + internal use

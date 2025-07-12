@@ -10,14 +10,14 @@ router = APIRouter(prefix="/teachers", tags=["Teachers"])
 
 @router.post("/")
 def create_teacher(
-    teacher: schemas.TeacherCreate,
+    teacher_data: schemas.TeacherCreate,
     db: Session = Depends(auth.get_db),
     current_user: models.User = Depends(auth.get_current_user),
 ):
     if current_user.role != models.RoleEnum.admin:
         raise HTTPException(status_code=403, detail="Only admins can create teachers")
 
-    return crud.create_teacher(db, teacher)
+    return crud.create_teacher(db, teacher_data)
 
 
 @router.get("/", response_model=List[schemas.TeacherOut])

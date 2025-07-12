@@ -3,6 +3,8 @@
 # from enum import Enum
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
+from datetime import datetime
+from . import schemas
 
 # ✅ Role enum to match your models.py
 # class RoleEnum(str, Enum):
@@ -110,11 +112,6 @@ class Assignment(BaseModel):
     subject_ids: List[int]
 
 
-# Input
-# class TeacherCreate(BaseModel):
-#     first_name: str
-#     last_name: str
-#     email: EmailStr
 class TeacherCreate(BaseModel):
     first_name: str
     last_name: str
@@ -122,18 +119,19 @@ class TeacherCreate(BaseModel):
     contact: Optional[str] = None
     status: Optional[str] = "Active"
     specialization: Optional[str] = None
-    dedicated_class: Optional[int] = None  # dedicated class teacher for ONE class
     assignments: Optional[List[Assignment]] = []
 
-    # AddTeacher Front-End Data
-    # first_name: newTeacher.first_name,
-    # last_name: newTeacher.last_name,
-    # email: newTeacher.email,
-    # contact: newTeacher.contact,
-    # status: newTeacher.status,
-    # specialization: newTeacher.specialization,
-    # class_teacher_for: newTeacher.classTeacherId,
-    # assignments: assignmentsPayload,
+
+class TeacherUpdate(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    contact: Optional[str] = None
+    status: Optional[str] = None
+    specialization: Optional[str] = None
+    assignments: Optional[List[Assignment]] = []
+
+    class Config:
+        orm_mode = True
 
 
 # DB + internal use
@@ -154,13 +152,30 @@ class TeacherResponse(BaseModel):
         orm_mode = True
 
 
+class ClassSubjectTeacherOut(BaseModel):
+    id: int
+    class_id: int
+    subject_id: int
+    teacher_id: int
+
+    class Config:
+        orm_mode = True
+
+
 class TeacherOut(BaseModel):
     id: int
-    name: str
-    subjects: List[str] = []  # or Optional[List[str]]
-    classes: List[str] = []
+    first_name: str
+    last_name: str
     contact: str
     status: str
+    specialization: Optional[str]
+    created_at: datetime
+    updated_at: datetime
+    subject_links: List[schemas.ClassSubjectTeacherOut] = []
+
+    # @property
+    # def email(self) -> str:
+    #     return self.user.email if self.user else None
 
     class Config:
         orm_mode = True

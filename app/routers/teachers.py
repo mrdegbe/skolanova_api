@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app import schemas, models, crud, auth
-from app.cruds import teacher
+from app.cruds import teachers
 
 router = APIRouter(prefix="/teachers", tags=["Teachers"])
 
@@ -16,7 +16,7 @@ def create_teacher(
     if current_user.role != models.RoleEnum.admin:
         raise HTTPException(status_code=403, detail="Only admins can create teachers")
 
-    return teacher.create_teacher(db, teacher_data)
+    return teachers.create_teacher(db, teacher_data)
 
 
 @router.get("/", response_model=List[schemas.TeacherOut])
@@ -26,7 +26,7 @@ def get_teachers(
     db: Session = Depends(auth.get_db),
     current_user: models.User = Depends(auth.get_current_user),
 ):
-    return teacher.get_teachers(db, skip, limit)
+    return teachers.get_teachers(db, skip, limit)
 
 
 @router.get("/{teacher_id}")
@@ -35,7 +35,7 @@ def get_teacher(
     db: Session = Depends(auth.get_db),
     current_user: models.User = Depends(auth.get_current_user),
 ):
-    return teacher.get_teacher(db, teacher_id)
+    return teachers.get_teacher(db, teacher_id)
 
 
 @router.put("/{teacher_id}")
@@ -47,7 +47,7 @@ def update_teacher(
 ):
     if current_user.role != models.RoleEnum.admin:
         raise HTTPException(status_code=403, detail="Only admins can update teachers")
-    return teacher.update_teacher(db, teacher_id, teacher_data)
+    return teachers.update_teacher(db, teacher_id, teacher_data)
 
 
 @router.delete("/{teacher_id}")
@@ -58,4 +58,4 @@ def delete_teacher(
 ):
     if current_user.role != models.RoleEnum.admin:
         raise HTTPException(status_code=403, detail="Only admins can delete teachers")
-    return teacher.delete_teacher(db, teacher_id)
+    return teachers.delete_teacher(db, teacher_id)

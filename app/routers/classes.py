@@ -3,6 +3,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app import schemas, models, crud, auth
+from app.cruds import classes
 
 router = APIRouter(prefix="/classes", tags=["Classes"])
 
@@ -15,7 +16,7 @@ def create_class(
 ):
     if current_user.role != models.RoleEnum.admin:
         raise HTTPException(status_code=403, detail="Only admins can create classes")
-    return crud.create_class(db, _class)
+    return classes.create_class(db, _class)
 
 
 @router.get("/")
@@ -25,7 +26,7 @@ def get_classes(
     db: Session = Depends(auth.get_db),
     current_user: models.User = Depends(auth.get_current_user),
 ):
-    return crud.get_classes(db, skip, limit)
+    return classes.get_classes(db, skip, limit)
 
 
 @router.get("/{class_id}")
@@ -34,7 +35,7 @@ def get_class(
     db: Session = Depends(auth.get_db),
     current_user: models.User = Depends(auth.get_current_user),
 ):
-    return crud.get_class(db, class_id)
+    return classes.get_class(db, class_id)
 
 
 @router.put("/{class_id}")
@@ -46,7 +47,7 @@ def update_class(
 ):
     if current_user.role != models.RoleEnum.admin:
         raise HTTPException(status_code=403, detail="Only admins can update classes")
-    return crud.update_class(db, class_id, _class)
+    return classes.update_class(db, class_id, _class)
 
 
 @router.delete("/{class_id}")
@@ -57,4 +58,4 @@ def delete_class(
 ):
     if current_user.role != models.RoleEnum.admin:
         raise HTTPException(status_code=403, detail="Only admins can delete classes")
-    return crud.delete_class(db, class_id)
+    return classes.delete_class(db, class_id)

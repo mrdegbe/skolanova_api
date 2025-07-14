@@ -78,8 +78,9 @@ def update_teacher(db: Session, teacher_id: int, update_data: schemas.TeacherUpd
     if update_data.specialization is not None:
         db_teacher.specialization = update_data.specialization
 
-    # ✅ Wipe + recreate assignments if provided
+    # ✅ Wipe & recreate assignments if provided
     if update_data.assignments is not None:
+
         # Delete old links
         db.query(models.ClassSubjectTeacher).filter(
             models.ClassSubjectTeacher.teacher_id == teacher_id

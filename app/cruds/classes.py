@@ -3,7 +3,6 @@ from .. import models, auth, schemas
 import secrets, string
 
 
-# --- CLASSES ---
 def create_class(db: Session, _class: schemas.ClassCreate):
     db_class = models.Class(**_class.dict())
     db.add(db_class)

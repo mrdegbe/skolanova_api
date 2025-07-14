@@ -77,8 +77,7 @@ class ClassBase(BaseModel):
 
 
 class ClassCreate(ClassBase):
-    name: str
-    # pass
+    pass
 
 
 class ClassOut(ClassBase):
@@ -166,6 +165,7 @@ class TeacherOut(BaseModel):
     id: int
     first_name: str
     last_name: str
+    # email: str
     contact: str
     status: str
     specialization: Optional[str]
@@ -173,9 +173,9 @@ class TeacherOut(BaseModel):
     updated_at: datetime
     subject_links: List[schemas.ClassSubjectTeacherOut] = []
 
-    # @property
-    # def email(self) -> str:
-    #     return self.user.email if self.user else None
+    @property
+    def email(self) -> str:
+        return self.user.email if self.user else None
 
     class Config:
         orm_mode = True

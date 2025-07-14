@@ -43,9 +43,6 @@ def delete_student(db: Session, student_id: int):
     return {"ok": True}
 
 
-
-
-
 # --- SUBJECTS ---
 def create_subject(db: Session, subject: schemas.SubjectCreate):
     db_subject = models.Subject(**subject.dict())

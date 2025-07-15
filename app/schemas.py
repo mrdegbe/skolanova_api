@@ -73,7 +73,7 @@ class StudentOut(StudentBase):
 # ---- CLASS ----
 class ClassBase(BaseModel):
     name: str
-    teacher_id: int
+    class_teacher_id: int
 
 
 class ClassCreate(ClassBase):
@@ -82,6 +82,9 @@ class ClassCreate(ClassBase):
 
 class ClassOut(ClassBase):
     id: int
+    # category: str
+    created_at: str
+    updated_at: str
 
     class Config:
         orm_mode = True

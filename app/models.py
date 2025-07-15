@@ -21,6 +21,11 @@ class RoleEnum(enum.Enum):
     admin = "admin"
     teacher = "teacher"
 
+class ClassCategoryEnum(enum.Enum):
+    lower = "lower"
+    upper = "upper"
+    junior = "junior_high"
+
 
 class TermEnum(str, enum.Enum):
     term1 = "Term 1"
@@ -70,6 +75,10 @@ class Class(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True)
+    # category = Column(Enum(ClassCategoryEnum))
+    
+    # created_at = Column(DateTime(), server_default=func.now())
+    # updated_at = Column(DateTime(), server_default=func.now())
 
     # ✔️ Clearer name for homeroom teacher link
     class_teacher_id = Column(Integer, ForeignKey("teachers.id"))

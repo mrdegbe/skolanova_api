@@ -1,5 +1,6 @@
 # app/routers/classes.py
 
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app import schemas, models, crud, auth
@@ -19,13 +20,16 @@ def create_class(
     return classes.create_class(db, _class)
 
 
-@router.get("/")
+@router.get("/", response_model=List[schemas.ClassOut])
 def get_classes(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(auth.get_db),
     current_user: models.User = Depends(auth.get_current_user),
 ):
+    # if current_user.role != models.RoleEnum.admin:
+    #     raise HTTPException(status_code=403, detail="Only admins can get classes")
+
     return classes.get_classes(db, skip, limit)
 
 

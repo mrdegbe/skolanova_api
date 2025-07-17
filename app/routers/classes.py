@@ -33,7 +33,7 @@ def get_classes(
     return classes.get_classes(db, skip, limit)
 
 
-@router.get("/{class_id}")
+@router.get("/{class_id}", response_model=schemas.ClassOut)
 def get_class(
     class_id: int,
     db: Session = Depends(auth.get_db),
@@ -45,7 +45,7 @@ def get_class(
 @router.put("/{class_id}")
 def update_class(
     class_id: int,
-    _class: schemas.ClassCreate,
+    _class: schemas.ClassUpdate,
     db: Session = Depends(auth.get_db),
     current_user: models.User = Depends(auth.get_current_user),
 ):

@@ -73,21 +73,28 @@ class StudentOut(StudentBase):
 # ---- CLASS ----
 class ClassBase(BaseModel):
     name: str
-    class_teacher_id: int
+    class_teacher_id: Optional[int] = None  # ✅ allow NULLs
 
 
 class ClassCreate(ClassBase):
     pass
 
 
-class ClassOut(ClassBase):
+class ClassOut(BaseModel):
     id: int
-    # category: str
-    created_at: str
-    updated_at: str
+    name: str
+    class_teacher_id: Optional[int] = None
+    class_teacher_name: Optional[str]
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         orm_mode = True
+
+
+class ClassUpdate(BaseModel):
+    name: Optional[str] = None
+    class_teacher_id: Optional[int] = None
 
 
 # ---- SUBJECT ----

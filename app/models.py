@@ -21,6 +21,7 @@ class RoleEnum(enum.Enum):
     admin = "admin"
     teacher = "teacher"
 
+
 class ClassCategoryEnum(enum.Enum):
     lower = "lower"
     upper = "upper"
@@ -76,12 +77,19 @@ class Class(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True)
     # category = Column(Enum(ClassCategoryEnum))
-    
-    # created_at = Column(DateTime(), server_default=func.now())
-    # updated_at = Column(DateTime(), server_default=func.now())
+
+    created_at = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True),
+        onupdate=func.now(),
+        server_default=func.now(),
+        nullable=False,
+    )
 
     # ✔️ Clearer name for homeroom teacher link
-    class_teacher_id = Column(Integer, ForeignKey("teachers.id"))
+    class_teacher_id = Column(Integer, ForeignKey("teachers.id"), nullable=True)
 
     class_teacher = relationship(
         "Teacher", back_populates="dedicated_class", uselist=False

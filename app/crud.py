@@ -16,7 +16,26 @@ def create_student(db: Session, student: schemas.StudentCreate):
 
 
 def get_students(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Student).offset(skip).limit(limit).all()
+    students = db.query(models.Student).options(joinedload(models.Student.class_)).all()
+    result = []
+    for student in students:
+        result.append(
+            {
+                "id": student.id,
+                "first_name": student.first_name,
+                "last_name": student.last_name,
+                "date_of_birth": student.date_of_birth,
+                "gender": student.gender,
+                "guardian_name": student.guardian_name,
+                "guardian_contact": student.guardian_contact,
+                "class_id": student.class_id,
+                "class_name": student.class_.name if student.class_ else None,
+                "created_at": student.created_at,
+                "updated_at": student.updated_at,
+            }
+        )
+    return result
+    # return db.query(models.Student).offset(skip).limit(limit).all()
 
 
 def get_student(db: Session, student_id: int):

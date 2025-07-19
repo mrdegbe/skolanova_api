@@ -1,5 +1,6 @@
 # app/routers/students.py
 
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app import schemas, models, crud, auth
@@ -18,7 +19,7 @@ def create_student(
     return crud.create_student(db, student)
 
 
-@router.get("/")
+@router.get("/", response_model=List[schemas.StudentOut])
 def get_students(
     skip: int = 0,
     limit: int = 100,

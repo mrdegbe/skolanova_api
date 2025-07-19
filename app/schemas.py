@@ -53,9 +53,10 @@ class TokenData(BaseModel):
 class StudentBase(BaseModel):
     first_name: str
     last_name: str
-    date_of_birth: Optional[str] = None  # ISO date string
+    date_of_birth: Optional[datetime] = None  # ISO date string
     gender: Optional[str] = None
     guardian_name: Optional[str] = None
+    guardian_contact: Optional[str] = None
 
 
 class StudentCreate(StudentBase):
@@ -65,6 +66,9 @@ class StudentCreate(StudentBase):
 class StudentOut(StudentBase):
     id: int
     class_id: int
+    class_name: str  # 💡 Not in DB directly — must come from JOIN
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         orm_mode = True

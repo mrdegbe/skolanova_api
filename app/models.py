@@ -58,8 +58,15 @@ class Teacher(Base):
     specialization = Column(String)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
 
-    created_at = Column(DateTime(), server_default=func.now())
-    updated_at = Column(DateTime(), server_default=func.now())
+    created_at = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True),
+        onupdate=func.now(),
+        server_default=func.now(),
+        nullable=False,
+    )
 
     # ✅ Relationships
     user = relationship("User", back_populates="teacher")
@@ -88,7 +95,6 @@ class Class(Base):
         nullable=False,
     )
 
-    # ✔️ Clearer name for homeroom teacher link
     class_teacher_id = Column(Integer, ForeignKey("teachers.id"), nullable=True)
 
     class_teacher = relationship(
@@ -105,10 +111,19 @@ class Student(Base):
     id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String)
     last_name = Column(String)
-    date_of_birth = Column(Date)
+    date_of_birth = Column(DateTime(timezone=True))
     gender = Column(String)
     guardian_name = Column(String)
+    guardian_contact = Column(String)
     class_id = Column(Integer, ForeignKey("classes.id"))
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(
+        DateTime(timezone=True),
+        onupdate=func.now(),
+        server_default=func.now(),
+        nullable=False,
+    )
 
     # ✅ Relationships
     class_ = relationship("Class", back_populates="students")

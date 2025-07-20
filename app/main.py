@@ -15,6 +15,7 @@ from app.routers import (
     reports as reports_router,
     config as config_router,
     class_subject_teacher,
+    academic_years
 )
 
 Base.metadata.create_all(bind=engine)
@@ -48,6 +49,7 @@ app.include_router(results.router)
 app.include_router(reports_router.router)
 app.include_router(config_router.router)
 app.include_router(class_subject_teacher.router)
+app.include_router(academic_years.router)
 
 
 @app.post("/auth/login", response_model=schemas.Token)

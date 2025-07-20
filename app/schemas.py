@@ -3,7 +3,7 @@
 # from enum import Enum
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, date
 from . import schemas
 
 # ✅ Role enum to match your models.py
@@ -29,8 +29,6 @@ from . import schemas
 #         orm_mode = True
 
 # ==== AUTH ====
-
-
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
@@ -75,15 +73,39 @@ class StudentOut(StudentBase):
     class Config:
         orm_mode = True
 
+# ----- Acasemic Year -----
+class AcademicYearBase(BaseModel):
+    name: str
+    start_date: date
+    end_date: date
+    is_active: Optional[bool] = True
 
+
+class AcademicYearCreate(AcademicYearBase):
+    pass
+
+
+class AcademicYear(AcademicYearBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+    
 # ---- CLASS ----
 class ClassBase(BaseModel):
     name: str
     class_teacher_id: Optional[int] = None  # ✅ allow NULLs
+    academic_year_id: int  # Now required!
 
 
 class ClassCreate(ClassBase):
     pass
+
+
+class Class(ClassBase):
+    id: int
+    academic_year: AcademicYear  # Embedded
 
 
 class ClassOut(BaseModel):
@@ -280,3 +302,6 @@ class ClassSubjectTeacher(ClassSubjectTeacherBase):
 
     class Config:
         orm_mode = True
+
+
+

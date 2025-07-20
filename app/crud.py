@@ -8,7 +8,7 @@ import secrets, string
 
 # --- STUDENTS ---
 def create_student(db: Session, student: schemas.StudentCreate):
-    db_student = models.Student(**student.dict())
+    db_student = models.Student(**student.model_dump())
     db.add(db_student)
     db.commit()
     db.refresh(db_student)
@@ -29,6 +29,8 @@ def get_students(db: Session, skip: int = 0, limit: int = 100):
                 "guardian_name": student.guardian_name,
                 "guardian_contact": student.guardian_contact,
                 "class_id": student.class_id,
+                "fee_status": student.fee_status,
+                "address": student.address,
                 "class_name": student.class_.name if student.class_ else None,
                 "created_at": student.created_at,
                 "updated_at": student.updated_at,
@@ -46,7 +48,7 @@ def update_student(db: Session, student_id: int, student: schemas.StudentCreate)
     db_student = get_student(db, student_id)
     if not db_student:
         raise Exception("Student not found")
-    for key, value in student.dict().items():
+    for key, value in student.model_dump().items():
         setattr(db_student, key, value)
     db.commit()
     db.refresh(db_student)
@@ -64,7 +66,7 @@ def delete_student(db: Session, student_id: int):
 
 # --- SUBJECTS ---
 def create_subject(db: Session, subject: schemas.SubjectCreate):
-    db_subject = models.Subject(**subject.dict())
+    db_subject = models.Subject(**subject.model_dump())
     db.add(db_subject)
     db.commit()
     db.refresh(db_subject)
@@ -83,7 +85,7 @@ def update_subject(db: Session, subject_id: int, subject: schemas.SubjectCreate)
     db_subject = get_subject(db, subject_id)
     if not db_subject:
         raise Exception("Subject not found")
-    for key, value in subject.dict().items():
+    for key, value in subject.model_dump().items():
         setattr(db_subject, key, value)
     db.commit()
     db.refresh(db_subject)
@@ -101,7 +103,7 @@ def delete_subject(db: Session, subject_id: int):
 
 # --- RESULTS ---
 def create_result(db: Session, result: schemas.ResultCreate):
-    db_result = models.Result(**result.dict())
+    db_result = models.Result(**result.model_dump())
     db.add(db_result)
     db.commit()
     db.refresh(db_result)
@@ -140,7 +142,7 @@ def delete_result(db: Session, result_id: int):
 
 # --- YEARS ---
 def create_year(db: Session, year: schemas.YearCreate):
-    db_year = models.Year(**year.dict())
+    db_year = models.Year(**year.model_dump())
     db.add(db_year)
     db.commit()
     db.refresh(db_year)
@@ -153,7 +155,7 @@ def get_years(db: Session):
 
 # --- ClassSubjectTeacher ---
 def create_class_subject_teacher(db: Session, link: schemas.ClassSubjectTeacherCreate):
-    db_link = models.ClassSubjectTeacher(**link.dict())
+    db_link = models.ClassSubjectTeacher(**link.model_dump())
     db.add(db_link)
     db.commit()
     db.refresh(db_link)

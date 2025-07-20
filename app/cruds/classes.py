@@ -4,7 +4,7 @@ from .. import models, schemas
 
 
 def create_class(db: Session, _class: schemas.ClassCreate):
-    db_class = models.Class(**_class.dict())
+    db_class = models.Class(**_class.model_dump())
     db.add(db_class)
     db.commit()
     db.refresh(db_class)

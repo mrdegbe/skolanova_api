@@ -53,10 +53,12 @@ class TokenData(BaseModel):
 class StudentBase(BaseModel):
     first_name: str
     last_name: str
-    date_of_birth: Optional[datetime] = None  # ISO date string
-    gender: Optional[str] = None
+    gender: str
+    fee_status: str
+    date_of_birth: datetime  # ISO date string
     guardian_name: Optional[str] = None
     guardian_contact: Optional[str] = None
+    address: Optional[str] = None
 
 
 class StudentCreate(StudentBase):
@@ -128,9 +130,11 @@ class Assignment(BaseModel):
 class TeacherCreate(BaseModel):
     first_name: str
     last_name: str
+    gender: str
     email: str
     contact: Optional[str] = None
     status: Optional[str] = "Active"
+    address: Optional[str] = None
     specialization: Optional[str] = None
     assignments: Optional[List[Assignment]] = []
 
@@ -179,10 +183,12 @@ class TeacherOut(BaseModel):
     id: int
     first_name: str
     last_name: str
+    gender: str
     # email: str
     contact: str
     status: str
     specialization: Optional[str]
+    address: Optional[str]
     created_at: datetime
     updated_at: datetime
     subject_links: List[schemas.ClassSubjectTeacherOut] = []

@@ -108,6 +108,7 @@ class ClassUpdate(BaseModel):
 
 class SubjectBase(BaseModel):
     name: str
+    code: str
 
 
 class SubjectCreate(SubjectBase):

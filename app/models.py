@@ -11,6 +11,7 @@ from sqlalchemy import (
     Enum,
     func,
     DateTime,
+    Boolean,
 )
 from sqlalchemy.orm import relationship
 from .database import Base
@@ -79,6 +80,7 @@ class Class(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True)
+    academic_year_id = Column(Integer, ForeignKey("academic_years.id"))  # New!
 
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
@@ -96,6 +98,7 @@ class Class(Base):
         "Teacher", back_populates="dedicated_class", uselist=False
     )
 
+    academic_year = relationship("AcademicYear")
     students = relationship("Student", back_populates="class_")
     subject_links = relationship("ClassSubjectTeacher", back_populates="class_")
 
@@ -199,3 +202,23 @@ class ClassSubjectTeacher(Base):
     class_ = relationship("Class", back_populates="subject_links")
     subject = relationship("Subject", back_populates="subject_links")
     teacher = relationship("Teacher", back_populates="subject_links")
+
+
+class AcademicYear(Base):
+    __tablename__ = "academic_years"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, index=True)  # e.g., "2024/2025"
+    start_date = Column(Date)
+    end_date = Column(Date)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True),
+        onupdate=func.now(),
+        server_default=func.now(),
+        nullable=False,
+    )
+

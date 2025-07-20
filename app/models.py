@@ -22,12 +22,6 @@ class RoleEnum(enum.Enum):
     teacher = "teacher"
 
 
-class ClassCategoryEnum(enum.Enum):
-    lower = "lower"
-    upper = "upper"
-    junior = "junior_high"
-
-
 class TermEnum(str, enum.Enum):
     term1 = "Term 1"
     term2 = "Term 2"
@@ -85,7 +79,6 @@ class Class(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True)
-    # category = Column(Enum(ClassCategoryEnum))
 
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
@@ -139,6 +132,15 @@ class Subject(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True)
+    code = Column(String)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(
+        DateTime(timezone=True),
+        onupdate=func.now(),
+        server_default=func.now(),
+        nullable=False,
+    )
 
     # ✅ Relationships
     results = relationship("Result", back_populates="subject")

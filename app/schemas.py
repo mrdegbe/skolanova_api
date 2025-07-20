@@ -142,9 +142,11 @@ class TeacherCreate(BaseModel):
 class TeacherUpdate(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+    gender: Optional[str] = None
     contact: Optional[str] = None
     status: Optional[str] = None
     specialization: Optional[str] = None
+    address: Optional[str] = None
     assignments: Optional[List[Assignment]] = []
 
     class Config:

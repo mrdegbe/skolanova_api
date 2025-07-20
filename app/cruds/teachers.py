@@ -77,6 +77,10 @@ def update_teacher(db: Session, teacher_id: int, update_data: schemas.TeacherUpd
         db_teacher.status = update_data.status
     if update_data.specialization is not None:
         db_teacher.specialization = update_data.specialization
+    if update_data.gender is not None:
+        db_teacher.gender = update_data.gender
+    if update_data.address is not None:
+        db_teacher.address = update_data.address
 
     # ✅ Wipe & recreate assignments if provided
     if update_data.assignments is not None:

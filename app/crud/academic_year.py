@@ -1,17 +1,17 @@
-from fastapi import HTTPException
-from sqlalchemy.orm import Session, joinedload
-from .. import models, schemas
+# app/crud/academic_year.py
+
+from sqlalchemy.orm import Session
+from app.models.academic_year import AcademicYear as AcademicYearModel
+from app.schemas.academic_year import AcademicYearCreate
 
 
-# I believe it's same concept as Academic Year
-
-# def create_year(db: Session, year: schemas.YearCreate):
-#     db_year = models.Year(**year.model_dump())
-#     db.add(db_year)
-#     db.commit()
-#     db.refresh(db_year)
-#     return db_year
+def create_academic_year(db: Session, ay: AcademicYearCreate):
+    db_ay = AcademicYearModel(**ay.model_dump())
+    db.add(db_ay)
+    db.commit()
+    db.refresh(db_ay)
+    return db_ay
 
 
-# def get_years(db: Session):
-#     return db.query(models.Year).all()
+def get_academic_years(db: Session):
+    return db.query(AcademicYearModel).all()

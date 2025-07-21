@@ -12,7 +12,6 @@ from app.api.routes import (
     subjects,
     results,
     reports as reports_router,
-    config as config_router,
     class_subject_teacher,
     academic_years,
 )
@@ -43,6 +42,5 @@ app.include_router(classes.router)
 app.include_router(subjects.router)
 app.include_router(results.router)
 app.include_router(reports_router.router)
-# app.include_router(config_router.router)
 app.include_router(class_subject_teacher.router)
 app.include_router(academic_years.router)

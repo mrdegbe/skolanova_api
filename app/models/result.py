@@ -32,7 +32,7 @@ class Result(Base):
     term = Column(Enum(TermEnum), nullable=False)
 
     # ✅ Relationships
+    remarks = relationship("Remark", back_populates="result")
     student = relationship("Student", back_populates="results")
     subject = relationship("Subject", back_populates="results")
     academic_year = relationship("AcademicYear", back_populates="results")
-    remarks = relationship("Remark", back_populates="result")

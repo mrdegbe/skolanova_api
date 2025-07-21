@@ -1,24 +1,27 @@
-# app/routers/academic_years.py
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+# app/api/routes/academic_years.py
 
-# Custom Imports
-from app.schemas.academic_year import AcademicYear, AcademicYearCreate
-from app.core.dependencies import get_db, get_current_user
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from typing import List
+
+from app.schemas.academic_year import (
+    AcademicYear as AcademicYearSchema,
+    AcademicYearCreate,
+)
+from app.core.dependencies import get_db
+from app.crud.academic_year import (
+    create_academic_year as crud_create_ay,
+    get_academic_years,
+)
 
 router = APIRouter(prefix="/academic_years", tags=["AcademicYears"])
 
 
-@router.post("/", response_model=AcademicYear)
+@router.post("/", response_model=AcademicYearSchema)
 def create_academic_year(ay: AcademicYearCreate, db: Session = Depends(get_db)):
-    db_ay = AcademicYear(**ay.model_dump())
-    db.add(db_ay)
-    db.commit()
-    db.refresh(db_ay)
-    return db_ay
+    return crud_create_ay(db, ay)
 
 
-@router.get("/", response_model=List[AcademicYear])
+@router.get("/", response_model=List[AcademicYearSchema])
 def list_academic_years(db: Session = Depends(get_db)):
-    return db.query(AcademicYear).all()
+    return get_academic_years(db)

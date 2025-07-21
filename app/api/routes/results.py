@@ -14,7 +14,7 @@ from app.crud.result import (
     get_results as grs,
     get_result as gr,
     update_result as ur,
-    delete_result as dr
+    delete_result as dr,
 )
 from app.models.result import Result
 

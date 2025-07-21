@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session, joinedload
 from app.models.class_ import Class
-from app.schemas.class_ import Class, ClassCreate, ClassBase, ClassOut, ClassUpdate
+from app.schemas.class_ import ClassCreate, ClassBase, ClassOut, ClassUpdate
 
 
 def create_class(db: Session, class_: ClassCreate):

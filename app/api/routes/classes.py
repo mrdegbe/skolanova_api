@@ -11,7 +11,7 @@ from app.crud.class_ import (
     delete_class as dc,
     update_class as uc,
 )
-from app.schemas.class_ import Class, ClassBase, ClassCreate, ClassOut, ClassUpdate
+from app.schemas.class_ import ClassBase, ClassCreate, ClassOut, ClassUpdate
 from app.core.dependencies import get_db, get_current_user
 from app.models.user import User, RoleEnum
 

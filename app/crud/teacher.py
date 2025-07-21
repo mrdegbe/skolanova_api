@@ -1,10 +1,21 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session, joinedload
-from .. import models, auth, schemas
 import secrets, string
 
+from app.core.security import hash_password, verify_password, create_access_token
+from app.models.teacher import Teacher
+from app.schemas.teacher import (
+    TeacherBase,
+    TeacherCreate,
+    TeacherOut,
+    TeacherResponse,
+    TeacherUpdate,
+)
+from app.models.user import User, RoleEnum
+from app.models.class_subject_teacher import ClassSubjectTeacher
 
-def create_teacher(db: Session, teacher_data: schemas.TeacherCreate):
+
+def create_teacher(db: Session, teacher_data: TeacherCreate):
 
     # 1. Generate random password
     password = "".join(
@@ -12,13 +23,13 @@ def create_teacher(db: Session, teacher_data: schemas.TeacherCreate):
     )
 
     # 2. Hash it
-    password_hash = auth.hash_password(password)
+    password_hash = hash_password(password)
 
     # 3. Create linked User
-    db_user = models.User(
+    db_user = User(
         email=teacher_data.email,
         password_hash=password_hash,
-        role=models.RoleEnum.teacher,
+        role=RoleEnum.teacher,
         name=f"{teacher_data.first_name} {teacher_data.last_name}",
     )
     db.add(db_user)
@@ -26,7 +37,7 @@ def create_teacher(db: Session, teacher_data: schemas.TeacherCreate):
     db.refresh(db_user)
 
     # 4. Create teacher
-    db_teacher = models.Teacher(
+    db_teacher = Teacher(
         first_name=teacher_data.first_name,
         last_name=teacher_data.last_name,
         user_id=db_user.id,
@@ -41,7 +52,7 @@ def create_teacher(db: Session, teacher_data: schemas.TeacherCreate):
     # 6 For each assignment, create links
     for assignment in teacher_data.assignments or []:
         for subject_id in assignment.subject_ids:
-            link = models.ClassSubjectTeacher(
+            link = ClassSubjectTeacher(
                 class_id=assignment.class_id,
                 subject_id=subject_id,
                 teacher_id=db_teacher.id,
@@ -59,10 +70,8 @@ def create_teacher(db: Session, teacher_data: schemas.TeacherCreate):
     }
 
 
-def update_teacher(db: Session, teacher_id: int, update_data: schemas.TeacherUpdate):
-    db_teacher = (
-        db.query(models.Teacher).filter(models.Teacher.id == teacher_id).first()
-    )
+def update_teacher(db: Session, teacher_id: int, update_data: TeacherUpdate):
+    db_teacher = db.query(Teacher).filter(Teacher.id == teacher_id).first()
     if not db_teacher:
         raise HTTPException(status_code=404, detail="Teacher not found")
 
@@ -86,14 +95,14 @@ def update_teacher(db: Session, teacher_id: int, update_data: schemas.TeacherUpd
     if update_data.assignments is not None:
 
         # Delete old links
-        db.query(models.ClassSubjectTeacher).filter(
-            models.ClassSubjectTeacher.teacher_id == teacher_id
+        db.query(ClassSubjectTeacher).filter(
+            ClassSubjectTeacher.teacher_id == teacher_id
         ).delete()
 
         # Add new links
         for assignment in update_data.assignments:
             for subject_id in assignment.subject_ids:
-                link = models.ClassSubjectTeacher(
+                link = ClassSubjectTeacher(
                     teacher_id=teacher_id,
                     class_id=assignment.class_id,
                     subject_id=subject_id,
@@ -108,10 +117,8 @@ def update_teacher(db: Session, teacher_id: int, update_data: schemas.TeacherUpd
 
 def get_teachers(db: Session, skip: int = 0, limit: int = 100):
     return (
-        db.query(models.Teacher)
-        .options(
-            joinedload(models.Teacher.subject_links), joinedload(models.Teacher.user)
-        )
+        db.query(Teacher)
+        .options(joinedload(Teacher.subject_links), joinedload(Teacher.user))
         .offset(skip)
         .limit(limit)
         .all()
@@ -120,9 +127,9 @@ def get_teachers(db: Session, skip: int = 0, limit: int = 100):
 
 def get_teacher(db: Session, teacher_id: int):
     return (
-        db.query(models.Teacher)
-        .options(joinedload(models.Teacher.subject_links))
-        .filter(models.Teacher.id == teacher_id)
+        db.query(Teacher)
+        .options(joinedload(Teacher.subject_links))
+        .filter(Teacher.id == teacher_id)
         .first()
     )
 

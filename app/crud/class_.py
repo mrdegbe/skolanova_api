@@ -1,10 +1,11 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session, joinedload
-from .. import models, schemas
+from app.models.class_ import Class
+from app.schemas.class_ import Class, ClassCreate, ClassBase, ClassOut, ClassUpdate
 
 
-def create_class(db: Session, _class: schemas.ClassCreate):
-    db_class = models.Class(**_class.model_dump())
+def create_class(db: Session, class_: ClassCreate):
+    db_class = Class(**class_.model_dump())
     db.add(db_class)
     db.commit()
     db.refresh(db_class)
@@ -12,7 +13,7 @@ def create_class(db: Session, _class: schemas.ClassCreate):
 
 
 def get_classes(db: Session, skip: int = 0, limit: int = 100):
-    classes = db.query(models.Class).offset(skip).limit(limit).all()
+    classes = db.query(Class).offset(skip).limit(limit).all()
 
     results = []
     for cls in classes:
@@ -34,7 +35,7 @@ def get_classes(db: Session, skip: int = 0, limit: int = 100):
 
 
 def get_class(db: Session, class_id: int):
-    class_ = db.query(models.Class).filter(models.Class.id == class_id).first()
+    class_ = db.query(Class).filter(Class.id == class_id).first()
 
     if not class_:
         raise HTTPException(status_code=404, detail="Class not found")
@@ -56,16 +57,16 @@ def get_class(db: Session, class_id: int):
     return result
 
 
-def update_class(db: Session, class_id: int, _class: schemas.ClassUpdate):
-    db_class = db.query(models.Class).filter(models.Class.id == class_id).first()
+def update_class(db: Session, class_id: int, class_: ClassUpdate):
+    db_class = db.query(Class).filter(Class.id == class_id).first()
     if not db_class:
         raise Exception("Class not found")
 
-    if _class.name is not None:
-        db_class.name = _class.name
+    if class_.name is not None:
+        db_class.name = class_.name
 
-    if _class.class_teacher_id is not None:
-        db_class.class_teacher_id = _class.class_teacher_id
+    if class_.class_teacher_id is not None:
+        db_class.class_teacher_id = class_.class_teacher_id
 
     db.commit()
     db.refresh(db_class)
@@ -73,7 +74,7 @@ def update_class(db: Session, class_id: int, _class: schemas.ClassUpdate):
 
 
 def delete_class(db: Session, class_id: int):
-    db_class = db.query(models.Class).filter(models.Class.id == class_id).first()
+    db_class = db.query(Class).filter(Class.id == class_id).first()
     if not db_class:
         raise Exception("Class not found")
     db.delete(db_class)

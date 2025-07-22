@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel, EmailStr
 
 
@@ -20,7 +21,7 @@ class ClassSubjectTeacher(ClassSubjectTeacherBase):
 
 class ClassSubjectTeacherOut(BaseModel):
     id: int
-    class_id: int
+    class_id: Optional[int] = None  # ✅ FIXED
     subject_id: int
     teacher_id: int
 

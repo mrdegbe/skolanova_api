@@ -3,6 +3,7 @@ from sqlalchemy import (
     Integer,
     String,
     ForeignKey,
+    UniqueConstraint,
     func,
     DateTime,
 )
@@ -14,7 +15,7 @@ class Class(Base):
     __tablename__ = "classes"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True)
+    name = Column(String)
     academic_year_id = Column(Integer, ForeignKey("academic_years.id"))  # New!
 
     created_at = Column(
@@ -28,6 +29,10 @@ class Class(Base):
     )
 
     class_teacher_id = Column(Integer, ForeignKey("teachers.id"), nullable=True)
+
+    __table_args__ = (
+        UniqueConstraint("name", "academic_year_id", name="uq_class_name_year"),
+    )
 
     class_teacher = relationship(
         "Teacher", back_populates="dedicated_class", uselist=False

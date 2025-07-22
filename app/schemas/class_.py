@@ -4,6 +4,7 @@ from typing import Optional, List
 from datetime import datetime, date
 
 from app.models.academic_year import AcademicYear
+from app.schemas.academic_year import AcademicYearOut
 
 
 class ClassBase(BaseModel):
@@ -30,6 +31,7 @@ class ClassOut(BaseModel):
     id: int
     name: str
     class_teacher_id: Optional[int] = None
+    academic_year: Optional[AcademicYearOut] = None  # <- nested
     class_teacher_name: Optional[str]
     created_at: datetime
     updated_at: datetime
@@ -41,3 +43,4 @@ class ClassOut(BaseModel):
 class ClassUpdate(BaseModel):
     name: Optional[str] = None
     class_teacher_id: Optional[int] = None
+    academic_year_id: Optional[int] = None

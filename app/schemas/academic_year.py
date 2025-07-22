@@ -15,6 +15,14 @@ class AcademicYearCreate(AcademicYearBase):
     pass
 
 
+class AcademicYearOut(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        orm_mode = True
+
+
 class AcademicYear(AcademicYearBase):
     id: int
 

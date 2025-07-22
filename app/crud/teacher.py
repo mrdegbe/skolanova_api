@@ -128,7 +128,7 @@ def get_teachers(db: Session, skip: int = 0, limit: int = 100):
 def get_teacher(db: Session, teacher_id: int):
     return (
         db.query(Teacher)
-        .options(joinedload(Teacher.subject_links))
+        .options(joinedload(Teacher.subject_links), joinedload(Teacher.user))
         .filter(Teacher.id == teacher_id)
         .first()
     )

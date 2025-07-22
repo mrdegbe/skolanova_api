@@ -45,7 +45,7 @@ def get_teachers(
     return gts(db, skip, limit)
 
 
-@router.get("/{teacher_id}")
+@router.get("/{teacher_id}", response_model=TeacherOut)
 def get_teacher(
     teacher_id: int,
     db: Session = Depends(get_db),

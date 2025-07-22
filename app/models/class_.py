@@ -16,7 +16,9 @@ class Class(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
-    academic_year_id = Column(Integer, ForeignKey("academic_years.id"), nullable=False)  # New!
+    academic_year_id = Column(
+        Integer, ForeignKey("academic_years.id"), nullable=False
+    )  # New!
 
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False

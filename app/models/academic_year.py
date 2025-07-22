@@ -22,7 +22,7 @@ class AcademicYear(Base):
     name = Column(String, unique=True, index=True)  # e.g., "2024/2025"
     start_date = Column(Date)
     end_date = Column(Date)
-    is_active = Column(Boolean, default=True, nullable=False)
+    is_active = Column(Boolean, default=False, nullable=False)
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

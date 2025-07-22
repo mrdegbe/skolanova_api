@@ -10,7 +10,7 @@ from app.schemas.academic_year import AcademicYearOut
 class ClassBase(BaseModel):
     name: str
     class_teacher_id: Optional[int] = None  # ✅ allow NULLs
-    academic_year_id: int  # Now required!
+    academic_year_id: int  # Required!
 
 
 class ClassCreate(ClassBase):

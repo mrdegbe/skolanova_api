@@ -6,6 +6,10 @@ from app.schemas.academic_year import AcademicYearCreate
 
 
 def create_academic_year(db: Session, ay: AcademicYearCreate):
+
+    if ay.is_active:
+        db.query(AcademicYearModel).update({AcademicYearModel.is_active: False})
+        
     db_ay = AcademicYearModel(**ay.model_dump())
     db.add(db_ay)
     db.commit()
@@ -25,6 +29,11 @@ def update_academic_year(db: Session, ay_id: int, ay_update: AcademicYearCreate)
     db_ay = db.query(AcademicYearModel).filter(AcademicYearModel.id == ay_id).first()
     if db_ay is None:
         return None
+
+    # If setting this academic year to active, deactivate all others first
+    if ay_update.is_active:
+        db.query(AcademicYearModel).update({AcademicYearModel.is_active: False})
+
     for key, value in ay_update.model_dump().items():
         setattr(db_ay, key, value)
     db.commit()

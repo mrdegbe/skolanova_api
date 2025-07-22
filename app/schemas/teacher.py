@@ -60,7 +60,7 @@ class TeacherOut(BaseModel):
     first_name: str
     last_name: str
     gender: str
-    # email: str
+    email: str
     contact: str
     status: str
     specialization: Optional[str]
@@ -68,10 +68,6 @@ class TeacherOut(BaseModel):
     created_at: datetime
     updated_at: datetime
     subject_links: List[ClassSubjectTeacherOut] = []
-
-    @property
-    def email(self) -> str:
-        return self.user.email if self.user else None
 
     class Config:
         orm_mode = True

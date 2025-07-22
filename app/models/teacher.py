@@ -28,6 +28,10 @@ class Teacher(Base):
     specialization = Column(String)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
 
+    @property
+    def email(self):
+        return self.user.email if self.user else None
+
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

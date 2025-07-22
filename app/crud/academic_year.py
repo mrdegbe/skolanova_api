@@ -15,3 +15,27 @@ def create_academic_year(db: Session, ay: AcademicYearCreate):
 
 def get_academic_years(db: Session):
     return db.query(AcademicYearModel).all()
+
+
+def get_academic_year(db: Session, ay_id: int):
+    return db.query(AcademicYearModel).filter(AcademicYearModel.id == ay_id).first()
+
+
+def update_academic_year(db: Session, ay_id: int, ay_update: AcademicYearCreate):
+    db_ay = db.query(AcademicYearModel).filter(AcademicYearModel.id == ay_id).first()
+    if db_ay is None:
+        return None
+    for key, value in ay_update.model_dump().items():
+        setattr(db_ay, key, value)
+    db.commit()
+    db.refresh(db_ay)
+    return db_ay
+
+
+def delete_academic_year(db: Session, ay_id: int):
+    db_ay = db.query(AcademicYearModel).filter(AcademicYearModel.id == ay_id).first()
+    if db_ay is None:
+        return None
+    db.delete(db_ay)
+    db.commit()
+    return db_ay

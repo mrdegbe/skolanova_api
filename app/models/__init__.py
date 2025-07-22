@@ -4,3 +4,6 @@ from .student import Student
 from .subject import Subject
 from .academic_year import AcademicYear
 from .teacher import Teacher
+from .user import User
+from .class_ import Class
+from .class_subject_teacher import ClassSubjectTeacher

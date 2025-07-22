@@ -40,6 +40,6 @@ class Class(Base):
         "Teacher", back_populates="dedicated_class", uselist=False
     )
 
-    academic_year = relationship("AcademicYear")
+    academic_year = relationship("AcademicYear", back_populates="classes")
     students = relationship("Student", back_populates="class_")
     subject_links = relationship("ClassSubjectTeacher", back_populates="class_")

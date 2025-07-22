@@ -31,18 +31,12 @@ def get_classes(db: Session, skip: int = 0, limit: int = 100):
             "name": cls.name,
             "class_teacher_id": cls.class_teacher_id,
             "academic_year_id": cls.academic_year_id,
-            "academic_year": None,  # 👇
+            "academic_year_id": cls.academic_year.id if cls.academic_year else None,
+            "academic_year_name": cls.academic_year.name if cls.academic_year else None,
             "class_teacher_name": None,
             "created_at": cls.created_at,
             "updated_at": cls.updated_at,
         }
-
-        # Add academic_year details if present
-        if cls.academic_year:
-            result["academic_year"] = {
-                "id": cls.academic_year.id,
-                "name": cls.academic_year.name,
-            }
 
         if cls.class_teacher:
             result["class_teacher_name"] = (

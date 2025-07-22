@@ -9,7 +9,7 @@ def create_academic_year(db: Session, ay: AcademicYearCreate):
 
     if ay.is_active:
         db.query(AcademicYearModel).update({AcademicYearModel.is_active: False})
-        
+
     db_ay = AcademicYearModel(**ay.model_dump())
     db.add(db_ay)
     db.commit()

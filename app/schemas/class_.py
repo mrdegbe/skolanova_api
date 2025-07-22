@@ -31,8 +31,9 @@ class ClassOut(BaseModel):
     id: int
     name: str
     class_teacher_id: Optional[int] = None
-    academic_year: Optional[AcademicYearOut] = None  # <- nested
-    class_teacher_name: Optional[str]
+    academic_year_id: Optional[int] = None
+    academic_year_name: Optional[str] = None
+    class_teacher_name: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 

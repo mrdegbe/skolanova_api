@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session, joinedload
 
+from app.models.class_ import Class
 from app.models.student import Student
 from app.schemas.student import StudentBase, StudentCreate, StudentOut
 
@@ -14,7 +15,11 @@ def create_student(db: Session, student: StudentCreate):
 
 
 def get_students(db: Session, skip: int = 0, limit: int = 100):
-    students = db.query(Student).options(joinedload(Student.class_)).all()
+    students = (
+        db.query(Student)
+        .options(joinedload(Student.class_).joinedload(Class.academic_year))
+        .all()
+    )
     result = []
     for student in students:
         result.append(
@@ -30,6 +35,16 @@ def get_students(db: Session, skip: int = 0, limit: int = 100):
                 "fee_status": student.fee_status,
                 "address": student.address,
                 "class_name": student.class_.name if student.class_ else None,
+                "academic_year_id": (
+                    student.class_.academic_year.id
+                    if student.class_ and student.class_.academic_year
+                    else None
+                ),
+                "academic_year_name": (
+                    student.class_.academic_year.name
+                    if student.class_ and student.class_.academic_year
+                    else None
+                ),
                 "created_at": student.created_at,
                 "updated_at": student.updated_at,
             }
@@ -38,7 +53,41 @@ def get_students(db: Session, skip: int = 0, limit: int = 100):
 
 
 def get_student(db: Session, student_id: int):
-    return db.query(Student).filter(Student.id == student_id).first()
+    student = (
+        db.query(Student)
+        .options(joinedload(Student.class_).joinedload(Class.academic_year))
+        .filter(Student.id == student_id)
+        .first()
+    )
+
+    if not student:
+        return None
+
+    return {
+        "id": student.id,
+        "first_name": student.first_name,
+        "last_name": student.last_name,
+        "date_of_birth": student.date_of_birth,
+        "gender": student.gender,
+        "guardian_name": student.guardian_name,
+        "guardian_contact": student.guardian_contact,
+        "class_id": student.class_id,
+        "fee_status": student.fee_status,
+        "address": student.address,
+        "class_name": student.class_.name if student.class_ else None,
+        "academic_year_id": (
+            student.class_.academic_year.id
+            if student.class_ and student.class_.academic_year
+            else None
+        ),
+        "academic_year_name": (
+            student.class_.academic_year.name
+            if student.class_ and student.class_.academic_year
+            else None
+        ),
+        "created_at": student.created_at,
+        "updated_at": student.updated_at,
+    }
 
 
 def update_student(db: Session, student_id: int, student: StudentCreate):

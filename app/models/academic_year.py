@@ -35,15 +35,4 @@ class AcademicYear(Base):
 
     # ✅ Relationships
     results = relationship("Result", back_populates="academic_year")
-
-
-# I believe it's the same concept as Academic Year
-
-# class Year(Base):
-#     __tablename__ = "years"
-
-#     id = Column(Integer, primary_key=True, index=True)
-#     year = Column(Integer, unique=True)
-
-#     # ✅ Relationships
-#     results = relationship("Result", back_populates="year")
+    classes = relationship("Class", back_populates="academic_year")

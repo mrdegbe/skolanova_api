@@ -42,7 +42,7 @@ def get_students(
     return gss(db, skip, limit)
 
 
-@router.get("/{student_id}")
+@router.get("/{student_id}", response_model=StudentOut)
 def get_student(
     student_id: int,
     db: Session = Depends(get_db),

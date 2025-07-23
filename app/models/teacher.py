@@ -44,11 +44,10 @@ class Teacher(Base):
     )
 
     # ✅ Relationships
+    homeroom_classes = relationship(
+        "Class",
+        foreign_keys="[Class.class_teacher_id]",
+        back_populates="class_teacher",
+    )
     user = relationship("User", back_populates="teacher")
     subject_links = relationship("ClassSubjectTeacher", back_populates="teacher")
-    homeroom_class = relationship(
-        "Class",
-        foreign_keys="Class.class_teacher_id",
-        back_populates="class_teacher",
-        uselist=False   # 👉 Make it one-to-one
-    )

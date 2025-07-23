@@ -37,9 +37,7 @@ class Class(Base):
     )
 
     class_teacher = relationship(
-        "Teacher",
-        foreign_keys=[class_teacher_id],
-        back_populates="homeroom_class"
+        "Teacher", foreign_keys=[class_teacher_id], back_populates="homeroom_classes"
     )
 
     academic_year = relationship("AcademicYear", back_populates="classes")

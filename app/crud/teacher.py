@@ -121,7 +121,7 @@ def get_teachers(db: Session, skip: int = 0, limit: int = 100):
         .options(
             joinedload(Teacher.subject_links).joinedload(ClassSubjectTeacher.class_),
             joinedload(Teacher.subject_links).joinedload(ClassSubjectTeacher.subject),
-            joinedload(Teacher.homeroom_class),
+            joinedload(Teacher.homeroom_classes),
         )
         .offset(skip)
         .limit(limit)
@@ -142,6 +142,15 @@ def get_teachers(db: Session, skip: int = 0, limit: int = 100):
                     "teacher_id": link.teacher_id,
                 }
             )
+        # ✅ FIX: collect multiple homeroom classes — it's a list now!
+        homeroom_classes = []
+        for cls in teacher.homeroom_classes:
+            homeroom_classes.append(
+                {
+                    "id": cls.id,
+                    "name": cls.name,
+                }
+            )
 
         result.append(
             {
@@ -154,10 +163,7 @@ def get_teachers(db: Session, skip: int = 0, limit: int = 100):
                 "status": teacher.status,
                 "specialization": teacher.specialization,
                 "address": teacher.address,
-                "homeroom_class_id": teacher.homeroom_class_id,
-                "homeroom_class_name": (
-                    teacher.homeroom_class.name if teacher.homeroom_class else None
-                ),
+                "homeroom_classes": homeroom_classes,
                 "created_at": teacher.created_at,
                 "updated_at": teacher.updated_at,
                 "subject_links": subject_links,

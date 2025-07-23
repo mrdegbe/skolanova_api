@@ -24,6 +24,16 @@ class ClassSubjectTeacherOut(BaseModel):
     class_id: Optional[int] = None  # ✅ FIXED
     subject_id: int
     teacher_id: int
+    class_name: Optional[str] = None
+    subject_name: Optional[str] = None
 
     class Config:
         orm_mode = True
+
+    # id: int
+    # class_id: Optional[int] = None
+    # subject_id: int
+    # teacher_id: int
+
+    # class_name: Optional[str] = None
+    # subject_name: Optional[str] = None

@@ -27,6 +27,7 @@ class Teacher(Base):
     address = Column(String)
     specialization = Column(String)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    homeroom_class_id = Column(Integer, ForeignKey("classes.id"))
 
     @property
     def email(self):
@@ -44,9 +45,10 @@ class Teacher(Base):
 
     # ✅ Relationships
     user = relationship("User", back_populates="teacher")
-
-    # ✔️ This means: “I am the dedicated class teacher for this class”
-    dedicated_class = relationship("Class", back_populates="class_teacher")
-
-    # ✔️ This means: “I teach these subjects to these classes”
     subject_links = relationship("ClassSubjectTeacher", back_populates="teacher")
+    homeroom_class = relationship(
+        "Class",
+        foreign_keys="Class.class_teacher_id",
+        back_populates="class_teacher",
+        uselist=False   # 👉 Make it one-to-one
+    )

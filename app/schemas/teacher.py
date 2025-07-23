@@ -65,6 +65,8 @@ class TeacherOut(BaseModel):
     status: str
     specialization: Optional[str]
     address: Optional[str]
+    homeroom_class_id: Optional[int] = None
+    homeroom_class_name: Optional[str] = None
     created_at: datetime
     updated_at: datetime
     subject_links: List[ClassSubjectTeacherOut] = []

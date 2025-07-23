@@ -116,13 +116,65 @@ def update_teacher(db: Session, teacher_id: int, update_data: TeacherUpdate):
 
 
 def get_teachers(db: Session, skip: int = 0, limit: int = 100):
-    return (
+    teachers = (
         db.query(Teacher)
-        .options(joinedload(Teacher.subject_links), joinedload(Teacher.user))
+        .options(
+            joinedload(Teacher.subject_links).joinedload(ClassSubjectTeacher.class_),
+            joinedload(Teacher.subject_links).joinedload(ClassSubjectTeacher.subject),
+            joinedload(Teacher.homeroom_class),
+        )
         .offset(skip)
         .limit(limit)
         .all()
     )
+
+    result = []
+    for teacher in teachers:
+        subject_links = []
+        for link in teacher.subject_links:
+            subject_links.append(
+                {
+                    "id": link.id,
+                    "class_id": link.class_id,
+                    "class_name": link.class_.name if link.class_ else None,
+                    "subject_id": link.subject_id,
+                    "subject_name": link.subject.name if link.subject else None,
+                    "teacher_id": link.teacher_id,
+                }
+            )
+
+        result.append(
+            {
+                "id": teacher.id,
+                "first_name": teacher.first_name,
+                "last_name": teacher.last_name,
+                "gender": teacher.gender,
+                "email": teacher.email,
+                "contact": teacher.contact,
+                "status": teacher.status,
+                "specialization": teacher.specialization,
+                "address": teacher.address,
+                "homeroom_class_id": teacher.homeroom_class_id,
+                "homeroom_class_name": (
+                    teacher.homeroom_class.name if teacher.homeroom_class else None
+                ),
+                "created_at": teacher.created_at,
+                "updated_at": teacher.updated_at,
+                "subject_links": subject_links,
+            }
+        )
+
+    return result
+
+
+# def get_teachers(db: Session, skip: int = 0, limit: int = 100):
+#     return (
+#         db.query(Teacher)
+#         .options(joinedload(Teacher.subject_links), joinedload(Teacher.user))
+#         .offset(skip)
+#         .limit(limit)
+#         .all()
+#     )
 
 
 def get_teacher(db: Session, teacher_id: int):

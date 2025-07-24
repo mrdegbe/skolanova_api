@@ -1,8 +1,9 @@
 # from enum import Enum
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
-from datetime import datetime, date
+from datetime import datetime
 
+from app.schemas.class_ import HomeroomClassOut
 from app.schemas.class_subject_teacher import ClassSubjectTeacherOut
 
 
@@ -16,10 +17,10 @@ class TeacherCreate(BaseModel):
     last_name: str
     gender: str
     email: str
-    contact: Optional[str] = None
-    status: Optional[str] = "Active"
+    contact: str
+    status: str
     address: Optional[str] = None
-    specialization: Optional[str] = None
+    specialization: str
     assignments: Optional[List[Assignment]] = []
 
 
@@ -44,7 +45,6 @@ class TeacherBase(BaseModel):
     user_id: int
 
 
-# Output
 class TeacherResponse(BaseModel):
     id: int
     first_name: str
@@ -53,15 +53,6 @@ class TeacherResponse(BaseModel):
 
     class Config:
         orm_mode = True
-
-
-class HomeroomClassOut(BaseModel):
-    id: int
-    name: str
-
-    class Config:
-        orm_mode = True
-
 
 class TeacherOut(BaseModel):
     id: int

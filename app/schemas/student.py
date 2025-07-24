@@ -3,7 +3,6 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from datetime import datetime, date
 
-
 class StudentBase(BaseModel):
     first_name: str
     last_name: str
@@ -14,10 +13,8 @@ class StudentBase(BaseModel):
     guardian_contact: Optional[str] = None
     address: Optional[str] = None
 
-
 class StudentCreate(StudentBase):
     class_id: int  # link to a Class
-
 
 class StudentOut(StudentBase):
     id: int
@@ -27,6 +24,5 @@ class StudentOut(StudentBase):
     academic_year_name: str
     created_at: datetime
     updated_at: datetime
-
     class Config:
         orm_mode = True

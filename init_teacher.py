@@ -1,6 +1,6 @@
-# Run this in a script or shell
-from app.database import SessionLocal
+
 from app import models, auth
+from app.core.database import SessionLocal
 
 db = SessionLocal()
 

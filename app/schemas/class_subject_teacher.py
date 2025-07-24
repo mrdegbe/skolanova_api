@@ -7,17 +7,14 @@ class ClassSubjectTeacherBase(BaseModel):
     subject_id: int
     teacher_id: int
 
-
 class ClassSubjectTeacherCreate(ClassSubjectTeacherBase):
     pass
-
 
 class ClassSubjectTeacher(ClassSubjectTeacherBase):
     id: int
 
     class Config:
         orm_mode = True
-
 
 class ClassSubjectTeacherOut(BaseModel):
     id: int
@@ -29,11 +26,3 @@ class ClassSubjectTeacherOut(BaseModel):
 
     class Config:
         orm_mode = True
-
-    # id: int
-    # class_id: Optional[int] = None
-    # subject_id: int
-    # teacher_id: int
-
-    # class_name: Optional[str] = None
-    # subject_name: Optional[str] = None

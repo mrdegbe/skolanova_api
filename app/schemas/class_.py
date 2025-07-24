@@ -45,3 +45,10 @@ class ClassUpdate(BaseModel):
     name: Optional[str] = None
     class_teacher_id: Optional[int] = None
     academic_year_id: Optional[int] = None
+
+class HomeroomClassOut(BaseModel):
+    id: Optional[int] = None
+    name: Optional[str] = None
+
+    class Config:
+        orm_mode = True

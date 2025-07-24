@@ -3,16 +3,10 @@ from sqlalchemy import (
     Integer,
     String,
     ForeignKey,
-    Float,
-    Date,
-    Enum,
     func,
-    DateTime,
-    Boolean,
 )
 from sqlalchemy.orm import relationship
 from app.core.database import Base
-import enum
 
 
 class Remark(Base):

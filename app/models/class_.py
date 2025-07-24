@@ -19,7 +19,6 @@ class Class(Base):
     academic_year_id = Column(
         Integer, ForeignKey("academic_years.id"), nullable=False
     )  # New!
-
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -29,17 +28,16 @@ class Class(Base):
         server_default=func.now(),
         nullable=False,
     )
-
     class_teacher_id = Column(Integer, ForeignKey("teachers.id"), nullable=True)
 
     __table_args__ = (
         UniqueConstraint("name", "academic_year_id", name="uq_class_name_year"),
     )
 
-    class_teacher = relationship(
-        "Teacher", foreign_keys=[class_teacher_id], back_populates="homeroom_classes"
-    )
-
+    # ✅ Relationships
     academic_year = relationship("AcademicYear", back_populates="classes")
     students = relationship("Student", back_populates="class_")
     subject_links = relationship("ClassSubjectTeacher", back_populates="class_")
+    class_teacher = relationship(
+        "Teacher", foreign_keys=[class_teacher_id], back_populates="homeroom_classes"
+    )

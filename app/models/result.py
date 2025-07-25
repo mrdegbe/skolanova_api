@@ -23,7 +23,7 @@ class Result(Base):
         index=True,
     )
     academic_year_id = Column(
-        Integer, ForeignKey("academic_years.id", ondelete="RESTRICT"), index=True
+        Integer, ForeignKey("academic_years.id", ondelete="CASCADE"), index=True
     )
     score = Column(Float)
     term = Column(Enum(TermEnum), nullable=False)

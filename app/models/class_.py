@@ -18,7 +18,9 @@ class Class(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
-    academic_year_id = Column(Integer, ForeignKey("academic_years.id"), nullable=False)
+    academic_year_id = Column(
+        Integer, ForeignKey("academic_years.id", ondelete="CASCADE"), nullable=False
+    )
     status = Column(
         Enum(
             ClassStatusEnum,

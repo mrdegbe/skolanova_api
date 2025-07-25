@@ -1,24 +1,9 @@
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    ForeignKey,
-    Float,
-    Date,
-    Enum,
-    func,
-    DateTime,
-    Boolean,
-)
+from sqlalchemy import Column, Integer, ForeignKey, Float, Enum, func, UniqueConstraint
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 import enum
 
-
-class TermEnum(str, enum.Enum):
-    term1 = "Term 1"
-    term2 = "Term 2"
-    term3 = "Term 3"
+from app.models.enums import TermEnum
 
 
 class Result(Base):
@@ -30,6 +15,16 @@ class Result(Base):
     academic_year_id = Column(Integer, ForeignKey("academic_years.id"), index=True)
     score = Column(Float)
     term = Column(Enum(TermEnum), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint(
+            "student_id",
+            "subject_id",
+            "term",
+            "academic_year_id",
+            name="uq_result_unique",
+        ),
+    )
 
     # ✅ Relationships
     remarks = relationship("Remark", back_populates="result")

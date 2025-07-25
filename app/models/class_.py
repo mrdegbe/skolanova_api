@@ -6,9 +6,11 @@ from sqlalchemy import (
     UniqueConstraint,
     func,
     DateTime,
+    Enum,
 )
 from sqlalchemy.orm import relationship
 from app.core.database import Base
+from app.models.enums import ClassStatusEnum
 
 
 class Class(Base):
@@ -16,9 +18,10 @@ class Class(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
-    academic_year_id = Column(
-        Integer, ForeignKey("academic_years.id"), nullable=False
-    )  # New!
+    academic_year_id = Column(Integer, ForeignKey("academic_years.id"), nullable=False)
+    status = Column(
+        Enum(ClassStatusEnum), default=ClassStatusEnum.ACTIVE, nullable=False
+    )
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

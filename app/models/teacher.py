@@ -1,13 +1,7 @@
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    ForeignKey,
-    func,
-    DateTime,
-)
+from sqlalchemy import Column, Integer, String, ForeignKey, func, DateTime, Enum
 from sqlalchemy.orm import relationship
 from app.core.database import Base
+from app.models.enums import GenderEnum, TeacherStatusEnum
 
 
 class Teacher(Base):
@@ -16,9 +10,23 @@ class Teacher(Base):
     id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
-    gender = Column(String, nullable=False)
+    gender = Column(
+        Enum(
+            GenderEnum,
+            name="genderenum",
+            values_callable=lambda enum_cls: [e.value for e in enum_cls],
+        ),
+        nullable=False,
+    )
     contact = Column(String, nullable=False)
-    status = Column(String, nullable=False)
+    status = Column(
+        Enum(
+            TeacherStatusEnum,
+            name="teacherstatusenum",
+            values_callable=lambda enum_cls: [e.value for e in enum_cls],
+        ),
+        nullable=False,
+    )
     address = Column(String)
     specialization = Column(String, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))

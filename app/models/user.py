@@ -12,12 +12,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from app.core.database import Base
-import enum
-
-
-class RoleEnum(enum.Enum):
-    admin = "admin"
-    teacher = "teacher"
+from app.models.enums import RoleEnum
 
 
 class User(Base):

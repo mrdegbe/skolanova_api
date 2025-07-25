@@ -1,13 +1,7 @@
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    ForeignKey,
-    func,
-    DateTime,
-)
+from sqlalchemy import Column, Integer, String, ForeignKey, func, DateTime, Enum
 from sqlalchemy.orm import relationship
 from app.core.database import Base
+from app.models.enums import GenderEnum, FeeStatusEnum
 
 
 class Student(Base):
@@ -17,13 +11,27 @@ class Student(Base):
     first_name = Column(String)
     last_name = Column(String)
     date_of_birth = Column(DateTime(timezone=True))
-    gender = Column(String)
+    gender = Column(
+        Enum(
+            GenderEnum,
+            name="genderenum",
+            values_callable=lambda enum_cls: [e.value for e in enum_cls],
+        ),
+        nullable=False,
+    )
+    fee_status = Column(
+        Enum(
+            FeeStatusEnum,
+            name="feestatusenum",
+            values_callable=lambda enum_cls: [e.value for e in enum_cls],
+        ),
+        nullable=False,
+    )
     guardian_name = Column(String)
     guardian_contact = Column(String)
     class_id = Column(
         Integer, ForeignKey("classes.id", ondelete="RESTRICT"), nullable=False
     )
-    fee_status = Column(String)
     address = Column(String)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())

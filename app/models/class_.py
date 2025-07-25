@@ -20,7 +20,12 @@ class Class(Base):
     name = Column(String)
     academic_year_id = Column(Integer, ForeignKey("academic_years.id"), nullable=False)
     status = Column(
-        Enum(ClassStatusEnum), default=ClassStatusEnum.ACTIVE, nullable=False
+        Enum(
+            ClassStatusEnum,
+            name="classstatusenum",
+            values_callable=lambda enum_cls: [e.value for e in enum_cls],
+        ),
+        nullable=False,
     )
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False

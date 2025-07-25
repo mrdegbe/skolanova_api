@@ -14,7 +14,7 @@ class Remark(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     result_id = Column(Integer, ForeignKey("results.id"))
-    teacher_id = Column(Integer, ForeignKey("teachers.id"))
+    teacher_id = Column(Integer, ForeignKey("teachers.id", ondelete="SET NULL"))
     comment = Column(String)
 
     # ✅ Relationships

@@ -31,7 +31,7 @@ class Class(Base):
         server_default=func.now(),
         nullable=False,
     )
-    class_teacher_id = Column(Integer, ForeignKey("teachers.id"), nullable=True)
+    class_teacher_id = Column(Integer, ForeignKey("teachers.id", ondelete="SET NULL"), nullable=True)
 
     __table_args__ = (
         UniqueConstraint("name", "academic_year_id", name="uq_class_name_year"),

@@ -11,7 +11,7 @@ class Result(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     student_id = Column(Integer, ForeignKey("students.id"), index=True)
-    subject_id = Column(Integer, ForeignKey("subjects.id"), index=True)
+    subject_id = Column(Integer, ForeignKey("subjects.id", ondelete="SET NULL"), nullable=True, index=True)
     academic_year_id = Column(Integer, ForeignKey("academic_years.id"), index=True)
     score = Column(Float)
     term = Column(Enum(TermEnum), nullable=False)

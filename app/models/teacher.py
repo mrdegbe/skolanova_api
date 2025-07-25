@@ -29,7 +29,6 @@ class Teacher(Base):
     )
     address = Column(String)
     specialization = Column(String, nullable=False)
-    # user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), index=True)
 
     created_at = Column(

@@ -1,11 +1,4 @@
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    func,
-    DateTime,
-    Boolean
-)
+from sqlalchemy import Column, Integer, String, func, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 

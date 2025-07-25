@@ -10,9 +10,21 @@ class Result(Base):
     __tablename__ = "results"
 
     id = Column(Integer, primary_key=True, index=True)
-    student_id = Column(Integer, ForeignKey("students.id", ondelete="SET NULL"), nullable=True, index=True)
-    subject_id = Column(Integer, ForeignKey("subjects.id", ondelete="SET NULL"), nullable=True, index=True)
-    academic_year_id = Column(Integer, ForeignKey("academic_years.id", ondelete="RESTRICT"), index=True)
+    student_id = Column(
+        Integer,
+        ForeignKey("students.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    subject_id = Column(
+        Integer,
+        ForeignKey("subjects.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    academic_year_id = Column(
+        Integer, ForeignKey("academic_years.id", ondelete="RESTRICT"), index=True
+    )
     score = Column(Float)
     term = Column(Enum(TermEnum), nullable=False)
 

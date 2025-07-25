@@ -29,6 +29,6 @@ class ClassSubjectTeacher(Base):
 
     def __repr__(self):
         return f"<ClassSubjectTeacher id={self.id} class_id={self.class_id} subject_id={self.subject_id} teacher_id={self.teacher_id}>"
-    
+
     def __str__(self):
         return self.__repr__()

@@ -27,10 +27,9 @@ class AcademicYear(Base):
 
     def __repr__(self):
         return f"<AcademicYear id={self.id} name={self.name}>"
-    
+
     def __str__(self):
         return self.__repr__()
-
 
 
 # ✅ Event listener to ensure only one active year

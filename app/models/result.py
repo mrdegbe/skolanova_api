@@ -39,6 +39,6 @@ class Result(Base):
 
     def __repr__(self):
         return f"<Result id={self.id} student_id={self.student_id} subject_id={self.subject_id}>"
-    
+
     def __str__(self):
         return self.__repr__()

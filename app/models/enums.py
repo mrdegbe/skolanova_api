@@ -34,3 +34,8 @@ class ClassStatusEnum(enum.Enum):
     ACTIVE = "Active"
     ARCHIVED = "Archived"
     INACTIVE = "Inactive"
+
+
+class AttendanceStatusEnum(str, enum.Enum):
+    PRESENT = "present"
+    ABSENT = "absent"

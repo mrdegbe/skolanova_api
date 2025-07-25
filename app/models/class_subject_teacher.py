@@ -13,13 +13,22 @@ class ClassSubjectTeacher(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     class_id = Column(
-        Integer, ForeignKey("classes.id", ondelete="CASCADE"), nullable=False
+        Integer,
+        ForeignKey("classes.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
     subject_id = Column(
-        Integer, ForeignKey("subjects.id", ondelete="CASCADE"), nullable=False
+        Integer,
+        ForeignKey("subjects.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
     teacher_id = Column(
-        Integer, ForeignKey("teachers.id", ondelete="CASCADE"), nullable=False
+        Integer,
+        ForeignKey("teachers.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
 
     # ✅ Relationships

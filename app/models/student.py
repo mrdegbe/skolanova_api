@@ -30,7 +30,10 @@ class Student(Base):
     guardian_name = Column(String)
     guardian_contact = Column(String)
     class_id = Column(
-        Integer, ForeignKey("classes.id", ondelete="RESTRICT"), nullable=False
+        Integer,
+        ForeignKey("classes.id", ondelete="RESTRICT"),
+        index=True,
+        nullable=False,
     )
     address = Column(String)
 

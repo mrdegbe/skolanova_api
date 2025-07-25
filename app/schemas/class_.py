@@ -46,6 +46,7 @@ class ClassUpdate(BaseModel):
     class_teacher_id: Optional[int] = None
     academic_year_id: Optional[int] = None
 
+
 class HomeroomClassOut(BaseModel):
     id: Optional[int] = None
     name: Optional[str] = None

@@ -33,6 +33,7 @@ class Teacher(Base):
         server_default=func.now(),
         nullable=False,
     )
+
     @property
     def email(self):
         return self.user.email if self.user else None

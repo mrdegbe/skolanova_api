@@ -1,18 +1,6 @@
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    ForeignKey,
-    Float,
-    Date,
-    Enum,
-    func,
-    DateTime,
-    Boolean,
-)
+from sqlalchemy import Column, Integer, String, Date, func, DateTime, Boolean, event
 from sqlalchemy.orm import relationship
 from app.core.database import Base
-import enum
 
 
 class AcademicYear(Base):
@@ -36,3 +24,16 @@ class AcademicYear(Base):
     # ✅ Relationships
     results = relationship("Result", back_populates="academic_year")
     classes = relationship("Class", back_populates="academic_year")
+
+
+# ✅ Event listener to ensure only one active year
+@event.listens_for(AcademicYear, "before_insert")
+@event.listens_for(AcademicYear, "before_update")
+def enforce_single_active_academic_year(mapper, connection, target):
+    if target.is_active:
+        AcademicYear_tbl = AcademicYear.__table__
+        connection.execute(
+            AcademicYear_tbl.update()
+            .where(AcademicYear_tbl.c.id != target.id)
+            .values(is_active=False)
+        )

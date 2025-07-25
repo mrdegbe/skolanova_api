@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.exc import SQLAlchemyError
 import secrets, string
 
 from app.core.security import hash_password, verify_password, create_access_token
@@ -16,58 +17,71 @@ from app.models.class_subject_teacher import ClassSubjectTeacher
 
 
 def create_teacher(db: Session, teacher_data: TeacherCreate):
+    try:
+        # 1. Generate random password
+        password = "".join(
+            secrets.choice(string.ascii_letters + string.digits) for _ in range(12)
+        )
 
-    # 1. Generate random password
-    password = "".join(
-        secrets.choice(string.ascii_letters + string.digits) for _ in range(12)
-    )
+        # 2. Hash it
+        password_hash = hash_password(password)
 
-    # 2. Hash it
-    password_hash = hash_password(password)
+        # 3. Create linked User
+        db_user = User(
+            email=teacher_data.email,
+            password_hash=password_hash,
+            role=RoleEnum.teacher,
+            name=f"{teacher_data.first_name} {teacher_data.last_name}",
+        )
+        db.add(db_user)
 
-    # 3. Create linked User
-    db_user = User(
-        email=teacher_data.email,
-        password_hash=password_hash,
-        role=RoleEnum.teacher,
-        name=f"{teacher_data.first_name} {teacher_data.last_name}",
-    )
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
+        # 4. Create Teacher
+        db_teacher = Teacher(
+            first_name=teacher_data.first_name,
+            last_name=teacher_data.last_name,
+            gender=teacher_data.gender,  # ✅ you MUST pass this!
+            user_id=None,  # will link after flush
+            contact=teacher_data.contact,
+            status=teacher_data.status,
+            specialization=teacher_data.specialization,
+        )
 
-    # 4. Create teacher
-    db_teacher = Teacher(
-        first_name=teacher_data.first_name,
-        last_name=teacher_data.last_name,
-        user_id=db_user.id,
-        contact=teacher_data.contact,
-        status=teacher_data.status,
-        specialization=teacher_data.specialization,
-    )
-    db.add(db_teacher)
-    db.commit()
-    db.refresh(db_teacher)
+        db.add(db_teacher)
 
-    # 6 For each assignment, create links
-    for assignment in teacher_data.assignments or []:
-        for subject_id in assignment.subject_ids:
-            link = ClassSubjectTeacher(
-                class_id=assignment.class_id,
-                subject_id=subject_id,
-                teacher_id=db_teacher.id,
-            )
-            db.add(link)
-    db.commit()
+        # Flush to get generated IDs but don’t commit yet
+        db.flush()
 
-    # 7. Return teacher + plain password so admin can copy
-    return {
-        "teacher": {
-            "name": f"{db_teacher.first_name} {db_teacher.last_name}",
-            "email": db_user.email,
-        },
-        "plain_password": password,
-    }
+        # Link user → teacher FK if needed
+        db_teacher.user_id = db_user.id
+
+        # 5. Any child links
+        for assignment in teacher_data.assignments or []:
+            for subject_id in assignment.subject_ids:
+                link = ClassSubjectTeacher(
+                    class_id=assignment.class_id,
+                    subject_id=subject_id,
+                    teacher_id=db_teacher.id,
+                )
+                db.add(link)
+
+        # ✅ Now commit ONCE
+        db.commit()
+
+        # Refresh
+        db.refresh(db_teacher)
+        db.refresh(db_user)
+
+        return {
+            "teacher": {
+                "name": f"{db_teacher.first_name} {db_teacher.last_name}",
+                "email": db_user.email,
+            },
+            "plain_password": password,
+        }
+
+    except SQLAlchemyError as e:
+        db.rollback()
+        raise e
 
 
 def update_teacher(db: Session, teacher_id: int, update_data: TeacherUpdate):

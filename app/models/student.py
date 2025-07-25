@@ -20,7 +20,9 @@ class Student(Base):
     gender = Column(String)
     guardian_name = Column(String)
     guardian_contact = Column(String)
-    class_id = Column(Integer, ForeignKey("classes.id", ondelete="RESTRICT"), nullable=False) 
+    class_id = Column(
+        Integer, ForeignKey("classes.id", ondelete="RESTRICT"), nullable=False
+    )
     fee_status = Column(String)
     address = Column(String)
 

@@ -3,6 +3,7 @@ from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
 from datetime import datetime, date
 
+
 class AcademicYearBase(BaseModel):
     name: str
     start_date: date

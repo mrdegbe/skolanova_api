@@ -8,14 +8,17 @@ class ResultBase(BaseModel):
     year_id: int
     score: float
 
+
 class ResultCreate(ResultBase):
     pass
+
 
 class ResultOut(ResultBase):
     id: int
 
     class Config:
         orm_mode = True
+
 
 class ResultUpdate(BaseModel):
     score: float

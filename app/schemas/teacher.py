@@ -16,7 +16,7 @@ class TeacherCreate(BaseModel):
     first_name: str
     last_name: str
     gender: str
-    email: str
+    email: EmailStr
     contact: str
     status: str
     address: Optional[str] = None
@@ -54,6 +54,7 @@ class TeacherResponse(BaseModel):
     class Config:
         orm_mode = True
 
+
 class TeacherOut(BaseModel):
     id: int
     first_name: str
@@ -64,9 +65,7 @@ class TeacherOut(BaseModel):
     status: str
     specialization: Optional[str]
     address: Optional[str]
-    # homeroom_class_id: Optional[int] = None
-    # homeroom_class_name: Optional[str] = None
-    homeroom_classes: List[HomeroomClassOut]  # ✅ plural, typed!
+    homeroom_classes: List[HomeroomClassOut]
     created_at: datetime
     updated_at: datetime
     subject_links: List[ClassSubjectTeacherOut] = []

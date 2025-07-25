@@ -53,3 +53,9 @@ class Teacher(Base):
     )
     user = relationship("User", back_populates="teacher")
     subject_links = relationship("ClassSubjectTeacher", back_populates="teacher")
+    
+    def __repr__(self):
+        return f"<Teacher id={self.id} name={self.first_name} {self.last_name}>"
+
+    def __str__(self):
+        return self.__repr__()

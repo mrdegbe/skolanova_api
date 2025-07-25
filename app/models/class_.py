@@ -41,3 +41,9 @@ class Class(Base):
     class_teacher = relationship(
         "Teacher", foreign_keys=[class_teacher_id], back_populates="homeroom_classes"
     )
+
+    def __repr__(self):
+        return f"<Class id={self.id} name={self.name}>"
+    
+    def __str__(self):
+        return self.__repr__()

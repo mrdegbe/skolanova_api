@@ -20,3 +20,9 @@ class Remark(Base):
     # ✅ Relationships
     result = relationship("Result", back_populates="remarks")
     teacher = relationship("Teacher")
+
+    def __repr__(self):
+        return f"<Remark id={self.id} result_id={self.result_id}>"
+    
+    def __str__(self):
+        return self.__repr__()

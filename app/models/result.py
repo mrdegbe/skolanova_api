@@ -36,3 +36,9 @@ class Result(Base):
     student = relationship("Student", back_populates="results")
     subject = relationship("Subject", back_populates="results")
     academic_year = relationship("AcademicYear", back_populates="results")
+
+    def __repr__(self):
+        return f"<Result id={self.id} student_id={self.student_id} subject_id={self.subject_id}>"
+    
+    def __str__(self):
+        return self.__repr__()

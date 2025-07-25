@@ -26,3 +26,9 @@ class User(Base):
 
     # ✅ Relationships
     teacher = relationship("Teacher", back_populates="user", uselist=False)
+
+    def __repr__(self):
+        return f"<User id={self.id} email={self.email}>"
+    
+    def __str__(self):
+        return self.__repr__()

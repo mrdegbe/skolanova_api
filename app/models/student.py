@@ -45,3 +45,9 @@ class Student(Base):
     # ✅ Relationships
     class_ = relationship("Class", back_populates="students")
     results = relationship("Result", back_populates="student")
+
+    def __repr__(self):
+        return f"<Student id={self.id} name={self.first_name} {self.last_name}>"
+    
+    def __str__(self):
+        return self.__repr__()

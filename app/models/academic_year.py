@@ -25,6 +25,13 @@ class AcademicYear(Base):
     results = relationship("Result", back_populates="academic_year")
     classes = relationship("Class", back_populates="academic_year")
 
+    def __repr__(self):
+        return f"<AcademicYear id={self.id} name={self.name}>"
+    
+    def __str__(self):
+        return self.__repr__()
+
+
 
 # ✅ Event listener to ensure only one active year
 @event.listens_for(AcademicYear, "before_insert")

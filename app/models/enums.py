@@ -37,5 +37,7 @@ class ClassStatusEnum(enum.Enum):
 
 
 class AttendanceStatusEnum(str, enum.Enum):
-    PRESENT = "present"
-    ABSENT = "absent"
+    PRESENT = "Present"
+    ABSENT = "Absent"
+    LATE = "Late"
+    EXCUSED = "Excused"

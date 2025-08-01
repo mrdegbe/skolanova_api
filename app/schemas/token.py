@@ -1,4 +1,4 @@
-# ✅ << if you have a Token response schema
+# ✅ Because I have a Token response schema
 
 from pydantic import BaseModel
 

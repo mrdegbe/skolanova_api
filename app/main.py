@@ -14,6 +14,7 @@ from app.api.routes import (
     reports as reports_router,
     class_subject_teacher,
     academic_years,
+    attendance,
 )
 
 # ✅ Create all tables — in prod you'd do this with Alembic, not at runtime
@@ -47,3 +48,4 @@ app.include_router(results.router)
 app.include_router(reports_router.router)
 app.include_router(class_subject_teacher.router)
 app.include_router(academic_years.router)
+app.include_router(attendance.router)

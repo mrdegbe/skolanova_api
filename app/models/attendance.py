@@ -17,7 +17,7 @@ from app.models.enums import AttendanceStatusEnum
 
 
 class Attendance(Base):
-    __tablename__ = "attendances"
+    __tablename__ = "attendance"
 
     id = Column(Integer, primary_key=True, index=True)
     student_id = Column(

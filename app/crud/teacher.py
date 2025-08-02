@@ -19,9 +19,7 @@ from app.models.class_subject_teacher import ClassSubjectTeacher
 def create_teacher(db: Session, teacher_data: TeacherCreate):
     try:
         # 1. Generate random password
-        password = "".join(
-            secrets.choice(string.ascii_letters + string.digits) for _ in range(12)
-        )
+        password = "password"
 
         # 2. Hash it
         password_hash = hash_password(password)

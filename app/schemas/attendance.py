@@ -37,3 +37,16 @@ class AttendanceOut(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class AttendanceHistoryOut(BaseModel):
+    id: int
+    date: date
+    student_name: str
+    class_name: str
+    status: AttendanceStatusEnum
+    note: str | None = None
+    marked_by: str | None = None  # Name of the teacher/user who marked it
+
+    class Config:
+        orm_mode = True

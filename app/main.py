@@ -1,5 +1,5 @@
 # app/main.py
-
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -17,10 +17,16 @@ from app.api.routes import (
     attendance,
 )
 
-# ✅ Create all tables — in prod you'd do this with Alembic, not at runtime
+# Load environment variable (default to 'prod' if not set)
+ENVIRONMENT = os.getenv("ENVIRONMENT", "prod")
+
+# Parse allowed origins from comma-separated list
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "").split(",")
+
+# Create tables (in production, use Alembic migrations)
 Base.metadata.create_all(bind=engine)
 
-# ✅ Instantiate FastAPI app
+# Instantiate FastAPI app
 app = FastAPI(
     title="Your School Management API",
     version="1.0.0",

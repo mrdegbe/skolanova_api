@@ -38,11 +38,9 @@ def create(
 def attendance_history(
     student_id: int,
     class_id: int,
-    start_date: date,
-    end_date: date,
     db: Session = Depends(get_db),
 ):
-    return get_attendance_history(db, student_id, class_id, start_date, end_date)
+    return get_attendance_history(db, student_id, class_id)
 
 
 # @router.get("/{attendance_id}", response_model=AttendanceOut)

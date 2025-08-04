@@ -98,8 +98,8 @@ def create_attendance(db: Session, attendance_in: AttendanceCreate):
 def get_attendance_history(
     db: Session,
     class_id: int,
-    start_date: date,
-    end_date: date,
+    # start_date: date,
+    # end_date: date,
     student_id: Optional[int] = None,
 ):
     query = (
@@ -116,14 +116,17 @@ def get_attendance_history(
         .join(Class, Attendance.class_id == Class.id)
         .outerjoin(User, Attendance.marked_by == User.id)
         .filter(
+            # Attendance.student_id == student_id,
             Attendance.class_id == class_id,
-            Attendance.date >= start_date,
-            Attendance.date <= end_date,
+            # Attendance.date >= "2025-08-01",
+            # Attendance.date <= "2025-08-31",
         )
     )
+    print(f"Query: {query}")  # Debugging line to check the query
 
     if student_id:
         query = query.filter(Attendance.student_id == student_id)
+
 
     return query.order_by(Attendance.date.desc()).all()
 

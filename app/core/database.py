@@ -1,16 +1,12 @@
-# SQLAlchemy engine, session
-
-# DB connection & session
+# app/core/database.py
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
-import os
-from dotenv import load_dotenv
+from app.core.config import settings  # ✅ get DATABASE_URL safely
 
-load_dotenv()
-
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-engine = create_engine(DATABASE_URL)
+# Use DATABASE_URL from validated config
+engine = create_engine(settings.DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Base class for SQLAlchemy models
 Base = declarative_base()

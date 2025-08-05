@@ -26,7 +26,6 @@ ALLOWED_ORIGINS = [
     origin.strip() for origin in settings.ALLOWED_ORIGINS.split(",") if origin.strip()
 ]
 
-
 # Instantiate FastAPI app
 app = FastAPI(
     title="Skolanova API",

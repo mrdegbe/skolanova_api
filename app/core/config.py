@@ -3,11 +3,16 @@
 from functools import lru_cache
 import os
 from typing import List
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
+
+load_dotenv(".env")
+env_mode = os.getenv("ENVIRONMENT", "dev").lower()
+load_dotenv(f".env.{env_mode}")
 
 
 class Settings(BaseSettings):
-    ENVIRONMENT: str = "prod"  # 'dev' or 'prod'
+    ENVIRONMENT: str = env_mode
 
     DATABASE_URL: str
     SECRET_KEY: str
@@ -16,7 +21,7 @@ class Settings(BaseSettings):
     ALLOWED_ORIGINS: str = ""
 
     class Config:
-        env_file = f".env.{os.getenv('ENVIRONMENT', 'dev')}"
+        env_file = None  # We've already loaded with dotenv
 
 
 @lru_cache()

@@ -29,7 +29,7 @@ ALLOWED_ORIGINS = [
 
 # Instantiate FastAPI app
 app = FastAPI(
-    title="Your School Management API",
+    title="Skolanova API",
     version="1.0.0",
 )
 

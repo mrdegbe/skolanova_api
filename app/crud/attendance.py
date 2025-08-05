@@ -127,7 +127,6 @@ def get_attendance_history(
     if student_id:
         query = query.filter(Attendance.student_id == student_id)
 
-
     return query.order_by(Attendance.date.desc()).all()
 
 

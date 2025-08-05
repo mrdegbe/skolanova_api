@@ -2,6 +2,7 @@
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.core.config import settings  # ✅ updated import
 
 from app.core.database import Base, engine  # ✅ Use your new core.database
 from app.api.routes import (
@@ -16,15 +17,15 @@ from app.api.routes import (
     academic_years,
     attendance,
 )
+from dotenv import load_dotenv
 
-# Load environment variable (default to 'prod' if not set)
-ENVIRONMENT = os.getenv("ENVIRONMENT", "prod")
+load_dotenv()
 
-# Parse allowed origins from comma-separated list
-ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "").split(",")
+# Load allowed origins from settings (comma-separated list)
+ALLOWED_ORIGINS = [
+    origin.strip() for origin in settings.ALLOWED_ORIGINS.split(",") if origin.strip()
+]
 
-# Create tables (in production, use Alembic migrations)
-Base.metadata.create_all(bind=engine)
 
 # Instantiate FastAPI app
 app = FastAPI(
@@ -35,14 +36,15 @@ app = FastAPI(
 # ✅ CORS Middleware (put real origins in prod)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:8080",
-    ],  # Replace with allowed origins in production!
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Create DB tables (for local dev only; Alembic in prod)
+if settings.ENVIRONMENT == "dev":
+    Base.metadata.create_all(bind=engine)
 
 # ✅ Include routers
 app.include_router(auth.router)

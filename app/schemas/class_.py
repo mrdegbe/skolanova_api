@@ -38,7 +38,7 @@ class ClassOut(BaseModel):
     updated_at: datetime
 
     class Config:
-        orm_mode = True
+        model_config = {"from_attributes": True}
 
 
 class ClassUpdate(BaseModel):
@@ -52,4 +52,4 @@ class HomeroomClassOut(BaseModel):
     name: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        model_config = {"from_attributes": True}

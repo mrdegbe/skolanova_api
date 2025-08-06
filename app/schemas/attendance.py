@@ -36,7 +36,7 @@ class AttendanceOut(BaseModel):
     remark: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        model_config = {"from_attributes": True}
 
 
 class AttendanceHistoryOut(BaseModel):
@@ -49,4 +49,4 @@ class AttendanceHistoryOut(BaseModel):
     marked_by: str | None = None  # Name of the teacher/user who marked it
 
     class Config:
-        orm_mode = True
+        model_config = {"from_attributes": True}

@@ -35,7 +35,7 @@ class TeacherUpdate(BaseModel):
     assignments: Optional[List[Assignment]] = []
 
     class Config:
-        orm_mode = True
+        model_config = {"from_attributes": True}
 
 
 # DB + internal use
@@ -52,7 +52,7 @@ class TeacherResponse(BaseModel):
     email: EmailStr
 
     class Config:
-        orm_mode = True
+        model_config = {"from_attributes": True}
 
 
 class TeacherOut(BaseModel):
@@ -71,4 +71,4 @@ class TeacherOut(BaseModel):
     subject_links: List[ClassSubjectTeacherOut] = []
 
     class Config:
-        orm_mode = True
+        model_config = {"from_attributes": True}

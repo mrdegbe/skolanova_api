@@ -16,7 +16,7 @@ class ClassSubjectTeacher(ClassSubjectTeacherBase):
     id: int
 
     class Config:
-        orm_mode = True
+        model_config = {"from_attributes": True}
 
 
 class ClassSubjectTeacherOut(BaseModel):
@@ -28,4 +28,4 @@ class ClassSubjectTeacherOut(BaseModel):
     subject_name: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        model_config = {"from_attributes": True}

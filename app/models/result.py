@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, ForeignKey, Float, Enum, func, UniqueCon
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 import enum
+from sqlalchemy.dialects.postgresql import UUID
 
 from app.models.enums import TermEnum
 
@@ -10,6 +11,13 @@ class Result(Base):
     __tablename__ = "results"
 
     id = Column(Integer, primary_key=True, index=True)
+
+    tenant_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("tenants.id", ondelete="CASCADE"),
+        nullable=True,  # Set to False after backfilling
+        index=True,
+    )
     student_id = Column(
         Integer,
         ForeignKey("students.id", ondelete="SET NULL"),
@@ -43,6 +51,7 @@ class Result(Base):
     student = relationship("Student", back_populates="results")
     subject = relationship("Subject", back_populates="results")
     academic_year = relationship("AcademicYear", back_populates="results")
+    tenant = relationship("Tenant", back_populates="results")
 
     def __repr__(self):
         return f"<Result id={self.id} student_id={self.student_id} subject_id={self.subject_id}>"

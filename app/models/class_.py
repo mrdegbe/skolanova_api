@@ -11,6 +11,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 from app.models.enums import ClassStatusEnum
+from sqlalchemy.dialects.postgresql import UUID
 
 
 class Class(Base):
@@ -18,9 +19,6 @@ class Class(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
-    academic_year_id = Column(
-        Integer, ForeignKey("academic_years.id", ondelete="CASCADE"), nullable=False
-    )
     status = Column(
         Enum(
             ClassStatusEnum,
@@ -38,6 +36,17 @@ class Class(Base):
         server_default=func.now(),
         nullable=False,
     )
+
+    # Foreign keys
+    tenant_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("tenants.id", ondelete="CASCADE"),
+        nullable=True,  # Set to False after backfilling
+        index=True,
+    )
+    academic_year_id = Column(
+        Integer, ForeignKey("academic_years.id", ondelete="CASCADE"), nullable=False
+    )
     class_teacher_id = Column(
         Integer, ForeignKey("teachers.id", ondelete="SET NULL"), nullable=True
     )
@@ -47,6 +56,7 @@ class Class(Base):
     )
 
     # ✅ Relationships
+    tenant = relationship("Tenant", back_populates="classes")
     academic_year = relationship("AcademicYear", back_populates="classes")
     students = relationship("Student", back_populates="class_")
     subject_links = relationship("ClassSubjectTeacher", back_populates="class_")

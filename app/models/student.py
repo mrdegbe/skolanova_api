@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, func, DateTime, Enum
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 from app.models.enums import GenderEnum, FeeStatusEnum
+from sqlalchemy.dialects.postgresql import UUID
 
 
 class Student(Base):
@@ -29,6 +30,12 @@ class Student(Base):
     )
     guardian_name = Column(String)
     guardian_contact = Column(String)
+    tenant_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("tenants.id", ondelete="CASCADE"),
+        nullable=True,  # Set to False after backfilling
+        index=True,
+    )
     class_id = Column(
         Integer,
         ForeignKey("classes.id", ondelete="RESTRICT"),
@@ -48,6 +55,7 @@ class Student(Base):
     # ✅ Relationships
     class_ = relationship("Class", back_populates="students")
     results = relationship("Result", back_populates="student")
+    tenant = relationship("Tenant", back_populates="students")
 
     def __repr__(self):
         return f"<Student id={self.id} name={self.first_name} {self.last_name}>"

@@ -1,6 +1,17 @@
-from sqlalchemy import Column, Integer, String, Date, func, DateTime, Boolean, event
+from sqlalchemy import (
+    Column,
+    ForeignKey,
+    Integer,
+    String,
+    Date,
+    func,
+    DateTime,
+    Boolean,
+    event,
+)
 from sqlalchemy.orm import relationship
 from app.core.database import Base
+from sqlalchemy.dialects.postgresql import UUID
 
 
 class AcademicYear(Base):
@@ -20,8 +31,15 @@ class AcademicYear(Base):
         server_default=func.now(),
         nullable=False,
     )
+    # Foreign key to Tenant
+    tenant_id = Column(
+        UUID(as_uuid=True), ForeignKey("tenants.id"), nullable=True
+    )  # 👈 Added line
 
     # ✅ Relationships
+    tenant = relationship(
+        "Tenant", back_populates="academic_years"
+    )  # 👈 Added relationship
     results = relationship("Result", back_populates="academic_year")
     classes = relationship("Class", back_populates="academic_year")
 

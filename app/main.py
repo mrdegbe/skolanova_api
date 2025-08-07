@@ -38,6 +38,7 @@ app = FastAPI(
 app.add_middleware(TenantMiddleware)
 
 
+# Optional: Add a simple route to check tenant subdomain
 @app.get("/whoami")
 async def whoami(request: Request):
     return {"tenant": request.state.tenant_slug}

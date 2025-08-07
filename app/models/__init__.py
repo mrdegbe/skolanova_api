@@ -8,3 +8,4 @@ from .user import User
 from .class_ import Class
 from .class_subject_teacher import ClassSubjectTeacher
 from .attendance import Attendance
+from .tenant import Tenant

@@ -11,11 +11,17 @@ from dotenv import load_dotenv
 from app.core.database import Base
 from app import models  # import all model modules so Alembic sees them
 
-# Load environment variables from .env file
-load_dotenv()
 
-# Read the DATABASE_URL from env
+# Step 1: Load .env to get ENVIRONMENT
+load_dotenv(".env")  # this loads ENVIRONMENT=dev or prod
+
+# Step 2: Load .env.dev or .env.prod based on ENVIRONMENT
+env = os.getenv("ENVIRONMENT", "dev")
+load_dotenv(f".env.{env}")  # this loads DATABASE_URL
+
+# Step 3: Read DATABASE_URL
 DATABASE_URL = os.getenv("DATABASE_URL")
+
 
 # import sys, os
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))

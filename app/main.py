@@ -18,6 +18,8 @@ from app.api.routes import (
     attendance,
 )
 from dotenv import load_dotenv
+from app.middleware.tenant import TenantMiddleware
+from starlette.requests import Request
 
 load_dotenv()
 
@@ -31,6 +33,15 @@ app = FastAPI(
     title="Skolanova API",
     version="1.0.0",
 )
+
+# Add middleware before any routers
+app.add_middleware(TenantMiddleware)
+
+
+@app.get("/whoami")
+async def whoami(request: Request):
+    return {"tenant": request.state.tenant_slug}
+
 
 # ✅ CORS Middleware (put real origins in prod)
 app.add_middleware(

@@ -38,6 +38,7 @@ def create_teacher(db: Session, teacher_data: TeacherCreate):
             first_name=teacher_data.first_name,
             last_name=teacher_data.last_name,
             gender=teacher_data.gender,  # ✅ you MUST pass this!
+            address=teacher_data.address,
             user_id=None,  # will link after flush
             contact=teacher_data.contact,
             status=teacher_data.status,

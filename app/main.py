@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings  # ✅ updated import
 
-from app.core.database import Base, engine  # ✅ Use your new core.database
+from app.core.database import Base, engine, TenantScopedSession
 from app.api.routes import (
     auth,
     students,
@@ -38,10 +38,21 @@ app = FastAPI(
 app.add_middleware(TenantMiddleware)
 
 
-# Optional: Add a simple route to check tenant subdomain
-@app.get("/whoami")
-async def whoami(request: Request):
-    return {"tenant": request.state.tenant_slug}
+@app.middleware("http")
+async def db_session_middleware(request: Request, call_next):
+    tenant_id = None
+    if hasattr(request.state, "tenant") and request.state.tenant:
+        tenant_id = request.state.tenant.id
+
+    request.state.db = TenantScopedSession(
+        tenant_id=tenant_id, bind=engine, autoflush=False, autocommit=False
+    )
+    try:
+        response = await call_next(request)
+    finally:
+        request.state.db.close()
+
+    return response
 
 
 # ✅ CORS Middleware (put real origins in prod)

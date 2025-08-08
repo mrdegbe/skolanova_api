@@ -12,6 +12,7 @@ from app.models.user import User
 
 from fastapi import Request, Depends, HTTPException
 from sqlalchemy.orm import Session
+from app.core.database import get_tenant_scoped_session
 
 # from app.models.tenant import Tenant
 
@@ -19,12 +20,23 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 
 # Database session dependency
-def get_db() -> Generator[Session, None, None]:
-    db = SessionLocal()
+def get_db(request: Request) -> Generator[Session, None, None]:
+    db = getattr(request.state, "db", None)
+    if db is None:
+        raise RuntimeError("Database session not initialized")
     try:
         yield db
     finally:
-        db.close()
+        pass  # session closed in middleware
+
+
+# def get_db(request: Request) -> Generator[Session, None, None]:
+#     tenant_id = getattr(request.state.tenant, "id", None)
+#     db = get_tenant_scoped_session(tenant_id=tenant_id)
+#     try:
+#         yield db
+#     finally:
+#         db.close()
 
 
 # Authenticated user dependency

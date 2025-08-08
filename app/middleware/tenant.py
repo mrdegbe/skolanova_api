@@ -1,6 +1,9 @@
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
-from starlette.responses import Response
+from starlette.responses import Response, JSONResponse
+
+from app.core.database import get_tenant_scoped_session
+from app.models.tenant import Tenant
 
 
 class TenantMiddleware(BaseHTTPMiddleware):
@@ -8,17 +11,32 @@ class TenantMiddleware(BaseHTTPMiddleware):
         host = request.headers.get("host", "")
         subdomain = None
 
-        # Extract subdomain only if it's in the format subdomain.domain.tld
         if host and "." in host:
             parts = host.split(".")
             if len(parts) > 2:
-                subdomain = parts[0]  # e.g., sunshine from sunshine.skolanova.org
+                subdomain = parts[0]
 
-        request.state.tenant_slug = subdomain
-
-        # Optional: handle unknown or missing subdomain
         if not subdomain:
-            return Response("Tenant subdomain missing or invalid", status_code=400)
+            return JSONResponse(
+                {"detail": "Tenant subdomain missing or invalid"}, status_code=400
+            )
 
-        response = await call_next(request)
+        # Open raw session to query tenant
+        raw_db = get_tenant_scoped_session()
+        tenant = raw_db.query(Tenant).filter(Tenant.slug == subdomain).first()
+        raw_db.close()
+
+        if not tenant:
+            return JSONResponse({"detail": "Tenant not found"}, status_code=404)
+
+        request.state.tenant = tenant
+
+        # Create tenant-scoped session for request
+        request.state.db = get_tenant_scoped_session(tenant_id=tenant.id)
+
+        try:
+            response = await call_next(request)
+        finally:
+            request.state.db.close()
+
         return response

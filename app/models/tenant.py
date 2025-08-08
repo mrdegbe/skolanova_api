@@ -27,6 +27,6 @@ class Tenant(Base):
     remarks = relationship("Remark", back_populates="tenant")
     results = relationship("Result", back_populates="tenant")
     students = relationship("Student", back_populates="tenant")
-    subjects = relationship("Subject", back_populates="tenant")
     teachers = relationship("Teacher", back_populates="tenant")
     users = relationship("User", back_populates="tenant")
+    # subjects = relationship("Subject", back_populates="tenant")

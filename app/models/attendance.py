@@ -44,7 +44,7 @@ class Attendance(Base):
     tenant_id = Column(
         UUID(as_uuid=True),
         ForeignKey("tenants.id", ondelete="CASCADE"),
-        nullable=True,  # Change to False after data is backfilled
+        nullable=False,  # Change to False after data is backfilled
         index=True,
     )
     student_id = Column(

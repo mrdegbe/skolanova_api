@@ -41,7 +41,7 @@ class Class(Base):
     tenant_id = Column(
         UUID(as_uuid=True),
         ForeignKey("tenants.id", ondelete="CASCADE"),
-        nullable=True,  # Set to False after backfilling
+        nullable=False,  # Set to False after backfilling
         index=True,
     )
     academic_year_id = Column(

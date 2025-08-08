@@ -33,7 +33,7 @@ class AcademicYear(Base):
     )
     # Foreign key to Tenant
     tenant_id = Column(
-        UUID(as_uuid=True), ForeignKey("tenants.id"), nullable=True
+        UUID(as_uuid=True), ForeignKey("tenants.id"), nullable=False
     )  # 👈 Added line
 
     # ✅ Relationships

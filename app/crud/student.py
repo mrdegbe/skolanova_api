@@ -1,68 +1,107 @@
+from typing import List, Optional
 from fastapi import HTTPException
 from sqlalchemy.orm import Session, joinedload
 
 from app.models.class_ import Class
 from app.models.student import Student
-from app.schemas.student import StudentBase, StudentCreate, StudentOut
+from app.schemas.student import StudentCreate, StudentUpdate
 
 
-def create_student(db: Session, student: StudentCreate):
-    db_student = Student(**student.model_dump())
+# -----------------------------
+# Create
+# -----------------------------
+def create_student(db: Session, student_data: StudentCreate, tenant_id: int) -> Student:
+    """Create a new student belonging to a specific tenant."""
+    db_student = Student(**student_data.model_dump(), tenant_id=tenant_id)
     db.add(db_student)
     db.commit()
     db.refresh(db_student)
     return db_student
 
 
-def get_students(db: Session, skip: int = 0, limit: int = 100):
+# -----------------------------
+# Read (List)
+# -----------------------------
+def get_students(
+    db: Session, tenant_id: int, skip: int = 0, limit: int = 100
+) -> List[dict]:
+    """Retrieve all students for a tenant."""
     students = (
         db.query(Student)
+        .filter(Student.tenant_id == tenant_id)
         .options(joinedload(Student.class_).joinedload(Class.academic_year))
+        .offset(skip)
+        .limit(limit)
         .all()
     )
-    result = []
-    for student in students:
-        result.append(
-            {
-                "id": student.id,
-                "first_name": student.first_name,
-                "last_name": student.last_name,
-                "date_of_birth": student.date_of_birth,
-                "gender": student.gender,
-                "guardian_name": student.guardian_name,
-                "guardian_contact": student.guardian_contact,
-                "class_id": student.class_id,
-                "fee_status": student.fee_status,
-                "address": student.address,
-                "class_name": student.class_.name if student.class_ else None,
-                "academic_year_id": (
-                    student.class_.academic_year.id
-                    if student.class_ and student.class_.academic_year
-                    else None
-                ),
-                "academic_year_name": (
-                    student.class_.academic_year.name
-                    if student.class_ and student.class_.academic_year
-                    else None
-                ),
-                "created_at": student.created_at,
-                "updated_at": student.updated_at,
-            }
-        )
-    return result
+
+    return [_serialize_student(student) for student in students]
 
 
-def get_student(db: Session, student_id: int):
+# -----------------------------
+# Read (Single)
+# -----------------------------
+def get_student(db: Session, student_id: int, tenant_id: int) -> Optional[dict]:
+    """Retrieve a single student by ID, scoped to a tenant."""
     student = (
         db.query(Student)
+        .filter(Student.id == student_id, Student.tenant_id == tenant_id)
         .options(joinedload(Student.class_).joinedload(Class.academic_year))
-        .filter(Student.id == student_id)
         .first()
     )
 
     if not student:
         return None
 
+    return _serialize_student(student)
+
+
+# -----------------------------
+# Update
+# -----------------------------
+def update_student(
+    db: Session, student_id: int, student_data: StudentUpdate, tenant_id: int
+) -> Student:
+    """Update an existing student."""
+    db_student = (
+        db.query(Student)
+        .filter(Student.id == student_id, Student.tenant_id == tenant_id)
+        .first()
+    )
+    if not db_student:
+        raise HTTPException(status_code=404, detail="Student not found")
+
+    for key, value in student_data.model_dump(exclude_unset=True).items():
+        setattr(db_student, key, value)
+
+    db.commit()
+    db.refresh(db_student)
+    return db_student
+
+
+# -----------------------------
+# Delete
+# -----------------------------
+def delete_student(db: Session, student_id: int, tenant_id: int) -> dict:
+    """Delete a student by ID."""
+    db_student = (
+        db.query(Student)
+        .filter(Student.id == student_id, Student.tenant_id == tenant_id)
+        .first()
+    )
+    if not db_student:
+        raise HTTPException(status_code=404, detail="Student not found")
+
+    db.delete(db_student)
+    db.commit()
+    return {"ok": True}
+
+
+# -----------------------------
+# Private Serializer
+# -----------------------------
+def _serialize_student(student: Student) -> dict:
+    """Convert a Student ORM object into a serializable dict."""
     return {
         "id": student.id,
         "first_name": student.first_name,
@@ -72,8 +111,6 @@ def get_student(db: Session, student_id: int):
         "guardian_name": student.guardian_name,
         "guardian_contact": student.guardian_contact,
         "class_id": student.class_id,
-        "fee_status": student.fee_status,
-        "address": student.address,
         "class_name": student.class_.name if student.class_ else None,
         "academic_year_id": (
             student.class_.academic_year.id
@@ -85,26 +122,120 @@ def get_student(db: Session, student_id: int):
             if student.class_ and student.class_.academic_year
             else None
         ),
+        "fee_status": student.fee_status,
+        "address": student.address,
         "created_at": student.created_at,
         "updated_at": student.updated_at,
     }
 
 
-def update_student(db: Session, student_id: int, student: StudentCreate):
-    db_student = get_student(db, student_id)
-    if not db_student:
-        raise Exception("Student not found")
-    for key, value in student.model_dump().items():
-        setattr(db_student, key, value)
-    db.commit()
-    db.refresh(db_student)
-    return db_student
+# from fastapi import HTTPException
+# from sqlalchemy.orm import Session, joinedload
+
+# from app.models.class_ import Class
+# from app.models.student import Student
+# from app.schemas.student import StudentBase, StudentCreate, StudentOut
 
 
-def delete_student(db: Session, student_id: int):
-    db_student = get_student(db, student_id)
-    if not db_student:
-        raise Exception("Student not found")
-    db.delete(db_student)
-    db.commit()
-    return {"ok": True}
+# def create_student(db: Session, student: StudentCreate):
+#     db_student = Student(**student.model_dump())
+#     db.add(db_student)
+#     db.commit()
+#     db.refresh(db_student)
+#     return db_student
+
+
+# def get_students(db: Session, skip: int = 0, limit: int = 100):
+#     students = (
+#         db.query(Student)
+#         .options(joinedload(Student.class_).joinedload(Class.academic_year))
+#         .all()
+#     )
+#     result = []
+#     for student in students:
+#         result.append(
+#             {
+#                 "id": student.id,
+#                 "first_name": student.first_name,
+#                 "last_name": student.last_name,
+#                 "date_of_birth": student.date_of_birth,
+#                 "gender": student.gender,
+#                 "guardian_name": student.guardian_name,
+#                 "guardian_contact": student.guardian_contact,
+#                 "class_id": student.class_id,
+#                 "fee_status": student.fee_status,
+#                 "address": student.address,
+#                 "class_name": student.class_.name if student.class_ else None,
+#                 "academic_year_id": (
+#                     student.class_.academic_year.id
+#                     if student.class_ and student.class_.academic_year
+#                     else None
+#                 ),
+#                 "academic_year_name": (
+#                     student.class_.academic_year.name
+#                     if student.class_ and student.class_.academic_year
+#                     else None
+#                 ),
+#                 "created_at": student.created_at,
+#                 "updated_at": student.updated_at,
+#             }
+#         )
+#     return result
+
+
+# def get_student(db: Session, student_id: int):
+#     student = (
+#         db.query(Student)
+#         .options(joinedload(Student.class_).joinedload(Class.academic_year))
+#         .filter(Student.id == student_id)
+#         .first()
+#     )
+
+#     if not student:
+#         return None
+
+#     return {
+#         "id": student.id,
+#         "first_name": student.first_name,
+#         "last_name": student.last_name,
+#         "date_of_birth": student.date_of_birth,
+#         "gender": student.gender,
+#         "guardian_name": student.guardian_name,
+#         "guardian_contact": student.guardian_contact,
+#         "class_id": student.class_id,
+#         "fee_status": student.fee_status,
+#         "address": student.address,
+#         "class_name": student.class_.name if student.class_ else None,
+#         "academic_year_id": (
+#             student.class_.academic_year.id
+#             if student.class_ and student.class_.academic_year
+#             else None
+#         ),
+#         "academic_year_name": (
+#             student.class_.academic_year.name
+#             if student.class_ and student.class_.academic_year
+#             else None
+#         ),
+#         "created_at": student.created_at,
+#         "updated_at": student.updated_at,
+#     }
+
+
+# def update_student(db: Session, student_id: int, student: StudentCreate):
+#     db_student = get_student(db, student_id)
+#     if not db_student:
+#         raise Exception("Student not found")
+#     for key, value in student.model_dump().items():
+#         setattr(db_student, key, value)
+#     db.commit()
+#     db.refresh(db_student)
+#     return db_student
+
+
+# def delete_student(db: Session, student_id: int):
+#     db_student = get_student(db, student_id)
+#     if not db_student:
+#         raise Exception("Student not found")
+#     db.delete(db_student)
+#     db.commit()
+#     return {"ok": True}

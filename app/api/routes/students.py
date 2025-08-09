@@ -1,74 +1,95 @@
 # app/routers/students.py
 
-# GLOBAL
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-# CUSTOM
-from app.core.dependencies import get_db, get_current_user
+from app.core.dependencies import get_db, get_current_user, get_current_tenant
 from app.crud.student import (
-    create_student as cs,
-    get_students as gss,
-    get_student as gs,
-    update_student as us,
-    delete_student as ds,
+    create_student as create_student_crud,
+    get_students as get_students_crud,
+    get_student as get_student_crud,
+    update_student as update_student_crud,
+    delete_student as delete_student_crud,
 )
 from app.models.user import User, RoleEnum
-from app.schemas.student import StudentCreate, StudentOut
-
+from app.models.tenant import Tenant
+from app.schemas.student import StudentCreate, StudentUpdate, StudentOut
 
 router = APIRouter(prefix="/students", tags=["Students"])
 
 
-@router.post("/")
+# -----------------------------
+# Create
+# -----------------------------
+@router.post("/", response_model=StudentOut)
 def create_student(
     student: StudentCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     if current_user.role != RoleEnum.admin:
         raise HTTPException(status_code=403, detail="Only admins can add students")
-    return cs(db, student)
+    return create_student_crud(db, student, tenant.id)
 
 
+# -----------------------------
+# List
+# -----------------------------
 @router.get("/", response_model=List[StudentOut])
 def get_students(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    tenant: Tenant = Depends(get_current_tenant),
 ):
-    return gss(db, skip, limit)
+    return get_students_crud(db, tenant.id, skip, limit)
 
 
+# -----------------------------
+# Retrieve
+# -----------------------------
 @router.get("/{student_id}", response_model=StudentOut)
 def get_student(
     student_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    tenant: Tenant = Depends(get_current_tenant),
 ):
-    return gs(db, student_id)
+    student = get_student_crud(db, student_id, tenant.id)
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    return student
 
 
-@router.put("/{student_id}")
+# -----------------------------
+# Update
+# -----------------------------
+@router.put("/{student_id}", response_model=StudentOut)
 def update_student(
     student_id: int,
-    student: StudentCreate,
+    student: StudentUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     if current_user.role != RoleEnum.admin:
         raise HTTPException(status_code=403, detail="Only admins can update students")
-    return us(db, student_id, student)
+    return update_student_crud(db, student_id, student, tenant.id)
 
 
+# -----------------------------
+# Delete
+# -----------------------------
 @router.delete("/{student_id}")
 def delete_student(
     student_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     if current_user.role != RoleEnum.admin:
         raise HTTPException(status_code=403, detail="Only admins can delete students")
-    return ds(db, student_id)
+    return delete_student_crud(db, student_id, tenant.id)

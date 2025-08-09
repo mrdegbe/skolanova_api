@@ -29,6 +29,7 @@ class Tenant(Base):
     students = relationship("Student", back_populates="tenant")
     teachers = relationship("Teacher", back_populates="tenant")
     users = relationship("User", back_populates="tenant")
+    subjects = relationship("Subject", back_populates="tenant")
     # subjects = relationship("Subject", back_populates="tenant")
 
     def __repr__(self):

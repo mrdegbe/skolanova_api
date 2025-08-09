@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, func, DateTime, Boolean
+from sqlalchemy import Column, ForeignKey, Integer, String, func, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from app.core.database import Base
+from sqlalchemy.dialects.postgresql import UUID
 
 
 class Subject(Base):
@@ -18,10 +19,14 @@ class Subject(Base):
         server_default=func.now(),
         nullable=False,
     )
+    tenant_id = Column(
+        UUID, ForeignKey("tenants.id", ondelete="CASCADE"), nullable=True, index=True
+    )
 
     # ✅ Relationships
     results = relationship("Result", back_populates="subject")
     subject_links = relationship("ClassSubjectTeacher", back_populates="subject")
+    tenant = relationship("Tenant", back_populates="subjects")
 
     def __repr__(self):
         return f"<Subject id={self.id} name={self.name}>"

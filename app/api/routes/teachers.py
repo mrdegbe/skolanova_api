@@ -14,7 +14,9 @@ router = APIRouter(prefix="/teachers", tags=["Teachers"])
 def require_admin(user: User) -> None:
     """Raise 403 if the current user is not an admin."""
     if user.role != RoleEnum.admin:
-        raise HTTPException(status_code=403, detail="Only admins can perform this action")
+        raise HTTPException(
+            status_code=403, detail="Only admins can perform this action"
+        )
 
 
 @router.post("/", response_model=TeacherOut)
@@ -58,7 +60,9 @@ def update_teacher(
     tenant=Depends(get_current_tenant),
 ):
     require_admin(current_user)
-    return teacher_crud.update_teacher(db, teacher_id, teacher_data, tenant_id=tenant.id)
+    return teacher_crud.update_teacher(
+        db, teacher_id, teacher_data, tenant_id=tenant.id
+    )
 
 
 @router.delete("/{teacher_id}")

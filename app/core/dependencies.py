@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.database import SessionLocal
+from app.models.tenant import Tenant
 from app.models.user import User
 
 from fastapi import Request, Depends, HTTPException
@@ -66,14 +67,8 @@ def get_current_user(
     return user
 
 
-# def get_current_tenant(
-#     request: Request,
-#     db: Session = Depends(get_db)
-# ):
-#     slug = request.state.tenant_slug
-#     tenant = db.query(Tenant).filter(Tenant.slug == slug).first()
-
-#     if not tenant:
-#         raise HTTPException(status_code=404, detail="Tenant not found")
-
-#     return tenant
+def get_current_tenant(request: Request) -> Tenant:
+    tenant = getattr(request.state, "tenant", None)
+    if not tenant:
+        raise HTTPException(status_code=404, detail="Tenant not found")
+    return tenant

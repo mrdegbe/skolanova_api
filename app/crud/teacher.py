@@ -1,72 +1,61 @@
-from fastapi import HTTPException
+# app/crud/teacher.py
+
+from fastapi import HTTPException, Request
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.exc import SQLAlchemyError
-import secrets, string
 
-from app.core.security import hash_password, verify_password, create_access_token
+from app.core.security import hash_password
 from app.models.teacher import Teacher
-from app.schemas.teacher import (
-    TeacherBase,
-    TeacherCreate,
-    TeacherOut,
-    TeacherResponse,
-    TeacherUpdate,
-)
+from app.schemas.teacher import TeacherCreate, TeacherUpdate
 from app.models.user import User, RoleEnum
 from app.models.class_subject_teacher import ClassSubjectTeacher
 
 
-def create_teacher(db: Session, teacher_data: TeacherCreate):
+def create_teacher(db: Session, teacher_data: TeacherCreate, tenant_id: int):
     try:
-        # 1. Generate random password
+        # TODO: generate a secure random password for production
         password = "password"
-
-        # 2. Hash it
         password_hash = hash_password(password)
 
-        # 3. Create linked User
+        # Create linked User with tenant_id
         db_user = User(
             email=teacher_data.email,
             password_hash=password_hash,
             role=RoleEnum.teacher,
             name=f"{teacher_data.first_name} {teacher_data.last_name}",
+            tenant_id=tenant_id,
         )
         db.add(db_user)
 
-        # 4. Create Teacher
+        # Create Teacher with tenant_id
         db_teacher = Teacher(
             first_name=teacher_data.first_name,
             last_name=teacher_data.last_name,
-            gender=teacher_data.gender,  # ✅ you MUST pass this!
+            gender=teacher_data.gender,
             address=teacher_data.address,
             user_id=None,  # will link after flush
             contact=teacher_data.contact,
             status=teacher_data.status,
             specialization=teacher_data.specialization,
+            tenant_id=tenant_id,
         )
-
         db.add(db_teacher)
 
-        # Flush to get generated IDs but don’t commit yet
-        db.flush()
-
-        # Link user → teacher FK if needed
+        db.flush()  # get generated IDs
         db_teacher.user_id = db_user.id
 
-        # 5. Any child links
+        # create assignment links
         for assignment in teacher_data.assignments or []:
             for subject_id in assignment.subject_ids:
                 link = ClassSubjectTeacher(
                     class_id=assignment.class_id,
                     subject_id=subject_id,
                     teacher_id=db_teacher.id,
+                    tenant_id=tenant_id,
                 )
                 db.add(link)
 
-        # ✅ Now commit ONCE
         db.commit()
-
-        # Refresh
         db.refresh(db_teacher)
         db.refresh(db_user)
 
@@ -78,17 +67,23 @@ def create_teacher(db: Session, teacher_data: TeacherCreate):
             "plain_password": password,
         }
 
-    except SQLAlchemyError as e:
+    except SQLAlchemyError:
         db.rollback()
-        raise e
+        raise
 
 
-def update_teacher(db: Session, teacher_id: int, update_data: TeacherUpdate):
-    db_teacher = db.query(Teacher).filter(Teacher.id == teacher_id).first()
+def update_teacher(
+    db: Session, teacher_id: int, update_data: TeacherUpdate, tenant_id: int
+):
+    db_teacher = (
+        db.query(Teacher)
+        .filter(Teacher.id == teacher_id, Teacher.tenant_id == tenant_id)
+        .first()
+    )
     if not db_teacher:
         raise HTTPException(status_code=404, detail="Teacher not found")
 
-    # Update basic fields if provided
+    # update fields
     if update_data.first_name is not None:
         db_teacher.first_name = update_data.first_name
     if update_data.last_name is not None:
@@ -104,34 +99,34 @@ def update_teacher(db: Session, teacher_id: int, update_data: TeacherUpdate):
     if update_data.address is not None:
         db_teacher.address = update_data.address
 
-    # ✅ Wipe & recreate assignments if provided
+    # wipe & recreate assignments if provided
     if update_data.assignments is not None:
-
-        # Delete old links
         db.query(ClassSubjectTeacher).filter(
-            ClassSubjectTeacher.teacher_id == teacher_id
+            ClassSubjectTeacher.teacher_id == teacher_id,
+            ClassSubjectTeacher.tenant_id == tenant_id,
         ).delete()
 
-        # Add new links
         for assignment in update_data.assignments:
             for subject_id in assignment.subject_ids:
                 link = ClassSubjectTeacher(
                     teacher_id=teacher_id,
                     class_id=assignment.class_id,
                     subject_id=subject_id,
+                    tenant_id=tenant_id,
                 )
                 db.add(link)
 
     db.commit()
     db.refresh(db_teacher)
-
     return db_teacher
 
 
-def get_teachers(db: Session, skip: int = 0, limit: int = 100):
+def get_teachers(db: Session, tenant_id: int, skip: int = 0, limit: int = 100):
     teachers = (
         db.query(Teacher)
+        .filter(Teacher.tenant_id == tenant_id)
         .options(
+            joinedload(Teacher.user),  # load user so email is available
             joinedload(Teacher.subject_links).joinedload(ClassSubjectTeacher.class_),
             joinedload(Teacher.subject_links).joinedload(ClassSubjectTeacher.subject),
             joinedload(Teacher.homeroom_classes),
@@ -143,27 +138,21 @@ def get_teachers(db: Session, skip: int = 0, limit: int = 100):
 
     result = []
     for teacher in teachers:
-        subject_links = []
-        for link in teacher.subject_links:
-            subject_links.append(
-                {
-                    "id": link.id,
-                    "class_id": link.class_id,
-                    "class_name": link.class_.name if link.class_ else None,
-                    "subject_id": link.subject_id,
-                    "subject_name": link.subject.name if link.subject else None,
-                    "teacher_id": link.teacher_id,
-                }
-            )
-        # ✅ FIX: collect multiple homeroom classes — it's a list now!
-        homeroom_classes = []
-        for cls in teacher.homeroom_classes:
-            homeroom_classes.append(
-                {
-                    "id": cls.id,
-                    "name": cls.name,
-                }
-            )
+        subject_links = [
+            {
+                "id": link.id,
+                "class_id": link.class_id,
+                "class_name": link.class_.name if link.class_ else None,
+                "subject_id": link.subject_id,
+                "subject_name": link.subject.name if link.subject else None,
+                "teacher_id": link.teacher_id,
+            }
+            for link in teacher.subject_links
+        ]
+
+        homeroom_classes = [
+            {"id": cls.id, "name": cls.name} for cls in teacher.homeroom_classes
+        ]
 
         result.append(
             {
@@ -171,7 +160,7 @@ def get_teachers(db: Session, skip: int = 0, limit: int = 100):
                 "first_name": teacher.first_name,
                 "last_name": teacher.last_name,
                 "gender": teacher.gender,
-                "email": teacher.email,
+                "email": teacher.user.email if teacher.user else None,
                 "contact": teacher.contact,
                 "status": teacher.status,
                 "specialization": teacher.specialization,
@@ -186,29 +175,39 @@ def get_teachers(db: Session, skip: int = 0, limit: int = 100):
     return result
 
 
-# def get_teachers(db: Session, skip: int = 0, limit: int = 100):
-#     return (
-#         db.query(Teacher)
-#         .options(joinedload(Teacher.subject_links), joinedload(Teacher.user))
-#         .offset(skip)
-#         .limit(limit)
-#         .all()
-#     )
-
-
-def get_teacher(db: Session, teacher_id: int):
+def get_teacher(db: Session, teacher_id: int, tenant_id: int):
     return (
         db.query(Teacher)
+        .filter(Teacher.id == teacher_id, Teacher.tenant_id == tenant_id)
         .options(joinedload(Teacher.subject_links), joinedload(Teacher.user))
-        .filter(Teacher.id == teacher_id)
         .first()
     )
 
 
-def delete_teacher(db: Session, teacher_id: int):
-    db_teacher = get_teacher(db, teacher_id)
+def delete_teacher(db: Session, teacher_id: int, tenant_id: int):
+    db_teacher = get_teacher(db, teacher_id, tenant_id)
     if not db_teacher:
-        raise Exception("Teacher not found")
+        raise HTTPException(status_code=404, detail="Teacher not found")
+    db.delete(db_teacher)
+    db.commit()
+    return {"ok": True}
+
+
+def get_teacher(db: Session, teacher_id: int, request: Request):
+    tenant_id = request.state.tenant.id
+    return (
+        db.query(Teacher)
+        .filter(Teacher.id == teacher_id, Teacher.tenant_id == tenant_id)
+        .options(joinedload(Teacher.subject_links), joinedload(Teacher.user))
+        .first()
+    )
+
+
+def delete_teacher(db: Session, teacher_id: int, request: Request):
+    tenant_id = request.state.tenant.id
+    db_teacher = get_teacher(db, teacher_id, request)
+    if not db_teacher:
+        raise HTTPException(status_code=404, detail="Teacher not found")
     db.delete(db_teacher)
     db.commit()
     return {"ok": True}

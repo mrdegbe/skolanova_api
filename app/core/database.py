@@ -39,6 +39,13 @@ def get_tenant_scoped_session(tenant_id=None):
     )(tenant_id=tenant_id)
 
 
+from app.models.tenant import Tenant  # adjust path if different
+
+
+def get_tenant_by_slug(db: Session, slug: str):
+    return db.query(Tenant).filter(Tenant.slug == slug).first()
+
+
 # class TenantScopedSession(Session):
 #     def __init__(self, tenant_id=None, *args, **kwargs):
 #         super().__init__(*args, **kwargs)

@@ -30,3 +30,9 @@ class Tenant(Base):
     teachers = relationship("Teacher", back_populates="tenant")
     users = relationship("User", back_populates="tenant")
     # subjects = relationship("Subject", back_populates="tenant")
+
+    def __repr__(self):
+        return f"<Tenant id={self.id} name={self.name}>"
+
+    def __str__(self):
+        return self.__repr__()

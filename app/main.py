@@ -28,6 +28,8 @@ ALLOWED_ORIGINS = [
     origin.strip() for origin in settings.ALLOWED_ORIGINS.split(",") if origin.strip()
 ]
 
+print(f"Allowed origins: {ALLOWED_ORIGINS}")  # Debugging line to check allowed origins
+
 # Instantiate FastAPI app
 app = FastAPI(
     title="Skolanova API",

@@ -15,8 +15,6 @@ from fastapi import Request, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.database import get_tenant_scoped_session
 
-# from app.models.tenant import Tenant
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 
@@ -29,15 +27,6 @@ def get_db(request: Request) -> Generator[Session, None, None]:
         yield db
     finally:
         pass  # session closed in middleware
-
-
-# def get_db(request: Request) -> Generator[Session, None, None]:
-#     tenant_id = getattr(request.state.tenant, "id", None)
-#     db = get_tenant_scoped_session(tenant_id=tenant_id)
-#     try:
-#         yield db
-#     finally:
-#         db.close()
 
 
 # Authenticated user dependency

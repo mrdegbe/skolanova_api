@@ -41,3 +41,9 @@ class AttendanceStatusEnum(str, enum.Enum):
     ABSENT = "Absent"
     LATE = "Late"
     EXCUSED = "Excused"
+
+
+class ScoreStatus(str, enum.Enum):
+    DRAFT = "Draft"
+    SUBMITTED = "Submitted"
+    FINAL = "Final"

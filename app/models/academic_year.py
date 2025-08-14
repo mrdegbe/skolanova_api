@@ -42,6 +42,7 @@ class AcademicYear(Base):
     )  # 👈 Added relationship
     results = relationship("Result", back_populates="academic_year")
     classes = relationship("Class", back_populates="academic_year")
+    scores = relationship("Score", back_populates="academic_year")
 
     def __repr__(self):
         return f"<AcademicYear id={self.id} name={self.name}>"

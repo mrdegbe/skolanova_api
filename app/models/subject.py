@@ -27,6 +27,7 @@ class Subject(Base):
     results = relationship("Result", back_populates="subject")
     subject_links = relationship("ClassSubjectTeacher", back_populates="subject")
     tenant = relationship("Tenant", back_populates="subjects")
+    scores = relationship("Score", back_populates="subject")
 
     def __repr__(self):
         return f"<Subject id={self.id} name={self.name}>"

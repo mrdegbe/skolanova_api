@@ -56,6 +56,7 @@ class Student(Base):
     class_ = relationship("Class", back_populates="students")
     results = relationship("Result", back_populates="student")
     tenant = relationship("Tenant", back_populates="students")
+    scores = relationship("Score", back_populates="student")
 
     def __repr__(self):
         return f"<Student id={self.id} name={self.first_name} {self.last_name}>"

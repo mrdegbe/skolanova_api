@@ -63,6 +63,7 @@ class Class(Base):
     class_teacher = relationship(
         "Teacher", foreign_keys=[class_teacher_id], back_populates="homeroom_classes"
     )
+    scores = relationship("Score", back_populates="class_")
 
     def __repr__(self):
         return f"<Class id={self.id} name={self.name}>"

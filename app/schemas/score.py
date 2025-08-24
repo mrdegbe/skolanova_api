@@ -10,7 +10,7 @@ class ScoreBase(BaseModel):
     class_score: float = Field(..., ge=0, le=30, description="Class score (0–30)")
     exam_score: float = Field(..., ge=0, le=70, description="Exam score (0–70)")
     term: str = Field(..., description="Term (e.g. 'Term 1', 'Term 2', 'Term 3')")
-    academic_year: str = Field(..., description="Academic year (e.g. '2024/2025')")
+    academic_year_id: int = Field(..., description="ID of the Academic year")
 
 
 class ScoreCreate(ScoreBase):

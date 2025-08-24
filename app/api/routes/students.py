@@ -9,6 +9,7 @@ from app.crud.student import (
     create_student as create_student_crud,
     get_students as get_students_crud,
     get_student as get_student_crud,
+    get_students_by_class_crud,
     update_student as update_student_crud,
     delete_student as delete_student_crud,
 )
@@ -62,6 +63,21 @@ def get_student(
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
     return student
+
+
+# -----------------------------
+# List students by class
+# -----------------------------
+@router.get("/by-class/{class_id}", response_model=List[StudentOut])
+def get_students_by_class(
+    class_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+    tenant: Tenant = Depends(get_current_tenant),
+):
+    """Get all students belonging to a specific class (scoped to tenant)."""
+    return get_students_by_class_crud(db, class_id, tenant.id)
+
 
 
 # -----------------------------

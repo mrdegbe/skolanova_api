@@ -79,7 +79,6 @@ def get_students_by_class(
     return get_students_by_class_crud(db, class_id, tenant.id)
 
 
-
 # -----------------------------
 # Update
 # -----------------------------

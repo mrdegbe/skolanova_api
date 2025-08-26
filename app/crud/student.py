@@ -61,7 +61,9 @@ def get_student(db: Session, student_id: int, tenant_id: int) -> Optional[dict]:
 # -----------------------------
 # Read (By Class)
 # -----------------------------
-def get_students_by_class_crud(db: Session, class_id: int, tenant_id: int) -> List[dict]:
+def get_students_by_class_crud(
+    db: Session, class_id: int, tenant_id: str
+) -> List[dict]:
     """Retrieve all students for a specific class (scoped to tenant)."""
     students = (
         db.query(Student)
@@ -71,7 +73,6 @@ def get_students_by_class_crud(db: Session, class_id: int, tenant_id: int) -> Li
     )
 
     return [_serialize_student(student) for student in students]
-
 
 
 # -----------------------------

@@ -6,7 +6,6 @@ from datetime import datetime, date
 class SubjectBase(BaseModel):
     name: str
     code: str
-    
 
 
 class SubjectCreate(SubjectBase):

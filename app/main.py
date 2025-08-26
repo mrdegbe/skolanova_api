@@ -7,6 +7,7 @@ from app.core.config import settings  # ✅ updated import
 from app.core.database import Base, engine, TenantScopedSession
 from app.api.routes import (
     auth,
+    scores,
     students,
     teachers,
     classes,
@@ -81,3 +82,4 @@ app.include_router(reports_router.router)
 app.include_router(class_subject_teacher.router)
 app.include_router(academic_years.router)
 app.include_router(attendance.router)
+app.include_router(scores.router)

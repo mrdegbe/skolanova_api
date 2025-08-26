@@ -54,44 +54,6 @@ def create_score(
     return db_objs
 
 
-# def create_score(
-#     db: Session, obj_in: ScoreCreatePayload, tenant_id: int
-# ) -> List[Score]:
-#     """Save draft scores for multiple students."""
-#     db_objs = []
-#     for record in obj_in.records:
-#         db_obj = Score(
-#             student_id=record.student_id,
-#             class_id=obj_in.class_id,
-#             subject_id=obj_in.subject_id,
-#             academic_year_id=obj_in.academic_year_id,
-#             term=obj_in.term,
-#             class_score=record.class_score,
-#             exam_score=record.exam_score,
-#             tenant_id=tenant_id,
-#             status="Draft",
-#         )
-#         db.add(db_obj)
-#         db_objs.append(db_obj)
-
-#     db.commit()
-#     for obj in db_objs:
-#         db.refresh(obj)
-
-#     return db_objs
-
-
-# def create_score(db: Session, obj_in: ScoreCreate, tenant_id: str):
-#     """
-#     Create a new score record for the given tenant.
-#     """
-#     db_obj = Score(**obj_in.dict(), tenant_id=tenant_id)
-#     db.add(db_obj)
-#     db.commit()
-#     db.refresh(db_obj)
-#     return db_obj
-
-
 def update_score(db: Session, score_id: int, obj_in: ScoreUpdate, tenant_id: str):
     """
     Update an existing score for a tenant.

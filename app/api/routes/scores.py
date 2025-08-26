@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 # from app.core.database import get_db
+from app.models.tenant import Tenant
 from app.schemas.score import ScoreCreate, ScoreCreatePayload, ScoreOut
 from app.crud.score import (
     create_score,
@@ -44,3 +45,24 @@ def submit_scores(
     score = create_score(db=db, obj_in=payload, tenant_id=tenant.id)
     # TODO: update status to "submitted" after creation
     return score
+
+
+@router.get("/", response_model=List[ScoreOut])
+def get_scores(
+    class_id: int,
+    subject_id: int,
+    term: str,
+    academic_year_id: int,
+    db: Session = Depends(get_db),
+    # tenant_id: str = Depends(get_current_tenant),
+    tenant: Tenant = Depends(get_current_tenant),
+):
+    """Fetch scores for given class, subject, term, and academic year (tenant-aware)."""
+    return get_scores_by_class_term_subject_year(
+        db=db,
+        tenant_id=tenant.id,
+        class_id=class_id,
+        term=term,
+        subject_id=subject_id,
+        academic_year_id=academic_year_id,
+    )

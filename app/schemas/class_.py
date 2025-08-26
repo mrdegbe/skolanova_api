@@ -14,6 +14,7 @@ class ClassBase(BaseModel):
 
 
 class ClassCreate(ClassBase):
+    status: str
     pass
 
 

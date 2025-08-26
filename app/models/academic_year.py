@@ -4,6 +4,7 @@ from sqlalchemy import (
     Integer,
     String,
     Date,
+    UniqueConstraint,
     func,
     DateTime,
     Boolean,
@@ -18,7 +19,7 @@ class AcademicYear(Base):
     __tablename__ = "academic_years"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, index=True)  # e.g., "2024/2025"
+    name = Column(String, index=True)  # e.g., "2024/2025"
     start_date = Column(Date)
     end_date = Column(Date)
     is_active = Column(Boolean, default=False, nullable=False)
@@ -44,6 +45,10 @@ class AcademicYear(Base):
     classes = relationship("Class", back_populates="academic_year")
     scores = relationship("Score", back_populates="academic_year")
 
+    __table_args__ = (
+        UniqueConstraint("name", "tenant_id", name="uq_academic_year_name_tenant"),
+    )
+
     def __repr__(self):
         return f"<AcademicYear id={self.id} name={self.name}>"
 
@@ -60,5 +65,6 @@ def enforce_single_active_academic_year(mapper, connection, target):
         connection.execute(
             AcademicYear_tbl.update()
             .where(AcademicYear_tbl.c.id != target.id)
+            .where(AcademicYear_tbl.c.tenant_id == target.tenant_id)
             .values(is_active=False)
         )

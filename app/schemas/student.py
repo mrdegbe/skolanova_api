@@ -39,9 +39,9 @@ class StudentUpdate(StudentBase):
 class StudentOut(StudentBase):
     id: int
     class_id: int
-    class_name: str  # 💡 Not in DB directly — must come from JOIN
-    academic_year_id: int
-    academic_year_name: str
+    class_name: Optional[str] = None
+    academic_year_id: Optional[int] = None
+    academic_year_name: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_db, get_current_user, get_current_tenant
 from app.models.user import User, RoleEnum
-from app.schemas.teacher import TeacherCreate, TeacherUpdate, TeacherOut
+from app.schemas.teacher import TeacherCreate, TeacherOutWithCredentials, TeacherUpdate, TeacherOut
 from app.crud import teacher as teacher_crud
 
 router = APIRouter(prefix="/teachers", tags=["Teachers"])
@@ -19,7 +19,7 @@ def require_admin(user: User) -> None:
         )
 
 
-@router.post("/", response_model=TeacherOut)
+@router.post("/", response_model=TeacherOutWithCredentials, status_code=201)
 def create_teacher(
     teacher_data: TeacherCreate,
     db: Session = Depends(get_db),

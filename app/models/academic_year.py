@@ -44,6 +44,7 @@ class AcademicYear(Base):
     results = relationship("Result", back_populates="academic_year")
     classes = relationship("Class", back_populates="academic_year")
     scores = relationship("Score", back_populates="academic_year")
+    term_locks = relationship("TermLock", back_populates="academic_year")
 
     __table_args__ = (
         UniqueConstraint("name", "tenant_id", name="uq_academic_year_name_tenant"),

@@ -5,7 +5,12 @@ from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_db, get_current_user, get_current_tenant
 from app.models.user import User, RoleEnum
-from app.schemas.teacher import TeacherCreate, TeacherOutWithCredentials, TeacherUpdate, TeacherOut
+from app.schemas.teacher import (
+    TeacherCreate,
+    TeacherOutWithCredentials,
+    TeacherUpdate,
+    TeacherOut,
+)
 from app.crud import teacher as teacher_crud
 
 router = APIRouter(prefix="/teachers", tags=["Teachers"])

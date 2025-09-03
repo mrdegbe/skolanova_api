@@ -33,6 +33,7 @@ def get_classes(db: Session, tenant_id: int, skip: int = 0, limit: int = 100):
             "name": cls.name,
             "class_teacher_id": cls.class_teacher_id,
             "academic_year_id": cls.academic_year_id,
+            "academic_year_name": cls.academic_year.name if cls.academic_year else None,
             "academic_year": (
                 {
                     "id": cls.academic_year.id,

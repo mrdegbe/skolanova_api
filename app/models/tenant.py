@@ -32,6 +32,7 @@ class Tenant(Base):
     subjects = relationship("Subject", back_populates="tenant")
     scores = relationship("Score", back_populates="tenant")
     # subjects = relationship("Subject", back_populates="tenant")
+    term_locks = relationship("TermLock", back_populates="tenant")
 
     def __repr__(self):
         return f"<Tenant id={self.id} name={self.name}>"

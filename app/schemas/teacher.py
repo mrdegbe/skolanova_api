@@ -73,9 +73,11 @@ class TeacherOut(BaseModel):
     class Config:
         model_config = {"from_attributes": True}
 
+
 class TeacherCreateOut(BaseModel):
     name: str
     email: EmailStr
+
 
 class TeacherOutWithCredentials(BaseModel):
     teacher: TeacherCreateOut

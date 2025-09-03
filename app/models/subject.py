@@ -1,4 +1,13 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, func, DateTime, Boolean
+from sqlalchemy import (
+    Column,
+    ForeignKey,
+    Integer,
+    String,
+    UniqueConstraint,
+    func,
+    DateTime,
+    Boolean,
+)
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 from sqlalchemy.dialects.postgresql import UUID
@@ -8,7 +17,7 @@ class Subject(Base):
     __tablename__ = "subjects"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True)
+    name = Column(String)
     code = Column(String)
     is_archived = Column(Boolean, default=False, nullable=False)
 
@@ -21,6 +30,10 @@ class Subject(Base):
     )
     tenant_id = Column(
         UUID, ForeignKey("tenants.id", ondelete="CASCADE"), nullable=True, index=True
+    )
+
+    __table_args__ = (
+        UniqueConstraint("tenant_id", "name", name="uq_tenant_subject_name"),
     )
 
     # ✅ Relationships

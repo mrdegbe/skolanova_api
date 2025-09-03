@@ -51,8 +51,14 @@ class Class(Base):
         Integer, ForeignKey("teachers.id", ondelete="SET NULL"), nullable=True
     )
 
+    # __table_args__ = (
+    #     UniqueConstraint("name", "academic_year_id", name="uq_class_name_year"),
+    # )
+
     __table_args__ = (
-        UniqueConstraint("name", "academic_year_id", name="uq_class_name_year"),
+        UniqueConstraint(
+            "tenant_id", "name", "academic_year_id", name="uq_class_tenant_name_year"
+        ),
     )
 
     # ✅ Relationships
@@ -64,6 +70,7 @@ class Class(Base):
         "Teacher", foreign_keys=[class_teacher_id], back_populates="homeroom_classes"
     )
     scores = relationship("Score", back_populates="class_")
+    term_locks = relationship("TermLock", back_populates="class_")
 
     def __repr__(self):
         return f"<Class id={self.id} name={self.name}>"

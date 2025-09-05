@@ -17,6 +17,7 @@ from app.api.routes import (
     class_subject_teacher,
     academic_years,
     attendance,
+    term_locks,
 )
 from dotenv import load_dotenv
 from app.middleware.tenant import TenantMiddleware
@@ -83,3 +84,4 @@ app.include_router(class_subject_teacher.router)
 app.include_router(academic_years.router)
 app.include_router(attendance.router)
 app.include_router(scores.router)
+app.include_router(term_locks.router)

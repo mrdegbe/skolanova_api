@@ -6,15 +6,15 @@ def seed_tenants():
 
     tenants = [
         Tenant(
-            name="Sunshine International School",
-            slug="sunshine",
-            school_logo="https://yourcdn.com/logos/sunshine.png"
+            name="App International School",
+            slug="app",
+            school_logo="https://yourcdn.com/logos/app.png"
         ),
-        Tenant(
-            name="Future Stars Academy",
-            slug="futurestars",
-            school_logo="https://yourcdn.com/logos/futurestars.png"
-        )
+        # Tenant(
+        #     name="Future Stars Academy",
+        #     slug="futurestars",
+        #     school_logo="https://yourcdn.com/logos/futurestars.png"
+        # )
     ]
 
     for tenant in tenants:
